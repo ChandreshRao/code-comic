@@ -20,3 +20,17 @@ dev = [
 
 [project.scripts]
 code-comic = "cli:main"
+
+# Optional: Configure code-comic behavior
+# Uncomment and customize as needed
+[tool.code-comic]
+# Context mode: "lightweight" (README + docs only) or "comprehensive" (full repo)
+# Default: "lightweight" to minimize token usage
+# context-mode = "lightweight"
+
+# Custom ignore patterns (in addition to .gitignore and built-in defaults)
+# ignore-patterns = ["*.tmp", "custom_build/", "temp_*"]
+
+# Maximum content size for comprehensive mode (in KB)
+# Warning issued if this is exceeded. Default: 500
+# max-content-size-kb = 500

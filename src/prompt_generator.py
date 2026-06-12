@@ -14,7 +14,16 @@ def build_scene_prompt(repo_metadata: Dict[str, Any]) -> str:
     if repo_metadata.get("detected_features"):
         bullets.append(f"Special markers: {', '.join(repo_metadata['detected_features'])}")
 
-    return (
+    # Add context mode and content size info if available
+    context_mode = repo_metadata.get("context_mode", "lightweight")
+    if context_mode == "comprehensive":
+        files_analyzed = repo_metadata.get("files_analyzed", 0)
+        if files_analyzed > 0:
+            bullets.append(f"Analysis scope: Comprehensive ({files_analyzed} files analyzed)")
+    else:
+        bullets.append("Analysis scope: Lightweight (README and key documentation)")
+
+    prompt = (
         "You are a developer storyteller. "
         "Create a 4-scene comic strip that explains the codebase architecture and developer workflow for the repository described below. "
         "For each scene, provide a title, a short description, and a recommended visual panel prompt. "
@@ -23,6 +32,39 @@ def build_scene_prompt(repo_metadata: Dict[str, Any]) -> str:
         "Repository details:\n"
         + "\n".join(bullets)
     )
+
+    # Append file contents if available (comprehensive mode)
+    if repo_metadata.get("content"):
+        content = repo_metadata.get("content", {})
+        if content:
+            prompt += "\n\nRepository Content Summary:\n"
+            prompt += "=" * 50 + "\n"
+            # Add up to 5 files for context (prioritize README, then others)
+            files_to_include = []
+            # README first
+            for filename, filecontent in content.items():
+                if "readme" in filename.lower():
+                    files_to_include.append((filename, filecontent))
+                    break
+
+            # Then other important files
+            for filename, filecontent in content.items():
+                if len(files_to_include) >= 5:
+                    break
+                if "readme" not in filename.lower():
+                    files_to_include.append((filename, filecontent))
+
+            for filename, filecontent in files_to_include[:5]:
+                if filecontent:
+                    # Truncate very long files to first 500 chars
+                    display_content = (
+                        filecontent[:500] + "\n[... truncated ...]"
+                        if len(filecontent) > 500
+                        else filecontent
+                    )
+                    prompt += f"\n--- File: {filename} ---\n{display_content}\n"
+
+    return prompt
 
 
 def parse_scene_output(raw_text: str) -> List[Dict[str, str]]:

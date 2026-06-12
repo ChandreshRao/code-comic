@@ -2,6 +2,17 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+
+# Try to import tomllib (Python 3.11+) or tomli as fallback
+try:
+    import tomllib
+except ModuleNotFoundError:
+    try:
+        import tomli as tomllib  # type: ignore
+    except ModuleNotFoundError:
+        tomllib = None  # type: ignore
 
 
 @dataclass
@@ -13,6 +24,9 @@ class Config:
     image_models: list[str] | None
     llm_api_key: str | None
     image_api_key: str | None
+    context_mode: str = "lightweight"  # "lightweight" or "comprehensive"
+    max_content_size_bytes: int = 500_000  # 500KB threshold for warnings
+    ignore_patterns: list[str] | None = None  # Additional patterns to ignore
     debug: bool = False
 
     @staticmethod
@@ -22,6 +36,44 @@ class Config:
         parts = [p.strip() for p in env_var.split(",") if p.strip()]
         return parts or None
 
+    @staticmethod
+    def _parse_ignore_patterns(env_var: str | None) -> list[str] | None:
+        if not env_var:
+            return None
+        parts = [p.strip() for p in env_var.split(",") if p.strip()]
+        return parts or None
+
+    @staticmethod
+    def _load_pyproject_config(
+        repo_root: Path | str | None = None,
+    ) -> dict:
+        """
+        Load code-comic config from pyproject.toml [tool.code-comic] section.
+
+        Returns:
+            Dict with config keys (empty dict if not found)
+        """
+        if tomllib is None:
+            return {}
+
+        if repo_root is None:
+            repo_root = Path.cwd()
+        else:
+            repo_root = Path(repo_root)
+
+        pyproject_path = repo_root / "pyproject.toml"
+        if not pyproject_path.exists():
+            return {}
+
+        try:
+            # Python 3.11+ uses binary mode for tomllib
+            mode = "rb" if hasattr(tomllib, "loads") else "r"
+            with open(pyproject_path, mode) as f:
+                data = tomllib.load(f) if mode == "rb" else tomllib.loads(f.read())
+            return data.get("tool", {}).get("code-comic", {})
+        except (OSError, Exception):
+            return {}
+
     @classmethod
     def from_env(
         cls,
@@ -29,13 +81,48 @@ class Config:
         llm_provider: str | None = None,
         image_provider: str | None = None,
         debug: bool = False,
+        context_mode: str = "lightweight",
+        repo_root: Path | str | None = None,
     ) -> "Config":
+        # Load config from pyproject.toml [tool.code-comic] section
+        # Precedence: CLI args > env vars > pyproject.toml > defaults
+        pyproject_config = cls._load_pyproject_config(repo_root)
+
         # Read plural-only model env vars. Single-model env vars were removed by design.
         llm_models_env = os.environ.get("CODE_COMIC_LLM_MODELS")
         image_models_env = os.environ.get("CODE_COMIC_IMAGE_MODELS")
 
         llm_models = cls._parse_models(llm_models_env)
         image_models = cls._parse_models(image_models_env)
+
+        # Parse context mode (env > pyproject.toml > default)
+        env_context_mode = os.environ.get("CODE_COMIC_CONTEXT_MODE")
+        pyproject_context_mode = pyproject_config.get("context-mode") or pyproject_config.get("context_mode")
+        final_context_mode = env_context_mode or pyproject_context_mode or context_mode
+
+        # Parse ignore patterns (env > pyproject.toml > default)
+        env_ignore_patterns = os.environ.get("CODE_COMIC_IGNORE_PATTERNS")
+        pyproject_ignore_patterns = pyproject_config.get("ignore-patterns") or pyproject_config.get("ignore_patterns")
+        ignore_patterns = None
+        if env_ignore_patterns:
+            ignore_patterns = cls._parse_ignore_patterns(env_ignore_patterns)
+        elif pyproject_ignore_patterns:
+            if isinstance(pyproject_ignore_patterns, list):
+                ignore_patterns = pyproject_ignore_patterns
+            elif isinstance(pyproject_ignore_patterns, str):
+                ignore_patterns = cls._parse_ignore_patterns(pyproject_ignore_patterns)
+
+        # Parse max content size from env/pyproject (in KB for convenience, stored as bytes)
+        max_content_size_str = (
+            os.environ.get("CODE_COMIC_MAX_CONTENT_SIZE")
+            or str(pyproject_config.get("max-content-size-kb") or pyproject_config.get("max_content_size_kb") or "")
+        )
+        max_content_size_bytes = 500_000  # Default 500KB
+        if max_content_size_str:
+            try:
+                max_content_size_bytes = int(max_content_size_str) * 1024  # Convert KB to bytes
+            except ValueError:
+                pass
 
         return cls(
             output_dir=output_dir,
@@ -45,6 +132,9 @@ class Config:
             image_models=image_models,
             llm_api_key=os.environ.get("CODE_COMIC_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY"),
             image_api_key=os.environ.get("CODE_COMIC_IMAGE_API_KEY") or os.environ.get("OPENAI_API_KEY"),
+            context_mode=final_context_mode,
+            max_content_size_bytes=max_content_size_bytes,
+            ignore_patterns=ignore_patterns,
             debug=debug,
         )
 

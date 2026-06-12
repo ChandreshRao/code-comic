@@ -36,9 +36,17 @@ def test_renderer_saves_prompt_files_and_uses_them(tmp_path: Path, monkeypatch) 
         "languages": ["py"],
         "package_files": ["pyproject.toml"],
         "total_files": 2,
+        "context_mode": "lightweight",
+        "content_warnings": [],
+        "files_analyzed": 0,
     }
 
-    def fake_analyze_repository(repo_path: str) -> Dict[str, Any]:
+    def fake_analyze_repository(
+        repo_path: str,
+        context_mode: str = "lightweight",
+        custom_ignore_patterns: list[str] | None = None,
+        max_content_size_bytes: int = 500_000,
+    ) -> Dict[str, Any]:
         return metadata
 
     fake_llm = FakeLLMClient()
@@ -72,9 +80,17 @@ def test_renderer_writes_prompt_files_even_without_images(tmp_path: Path, monkey
         "languages": ["py"],
         "package_files": ["pyproject.toml"],
         "total_files": 1,
+        "context_mode": "lightweight",
+        "content_warnings": [],
+        "files_analyzed": 0,
     }
 
-    def fake_analyze_repository(repo_path: str) -> Dict[str, Any]:
+    def fake_analyze_repository(
+        repo_path: str,
+        context_mode: str = "lightweight",
+        custom_ignore_patterns: list[str] | None = None,
+        max_content_size_bytes: int = 500_000,
+    ) -> Dict[str, Any]:
         return metadata
 
     fake_llm = FakeLLMClient()

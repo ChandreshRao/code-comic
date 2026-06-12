@@ -24,6 +24,20 @@ def parse_arguments() -> argparse.Namespace:
         help="Generate only the comic descriptions, no image files",
     )
     parser.add_argument(
+        "--context-mode",
+        choices=["lightweight", "comprehensive"],
+        default="lightweight",
+        help="Context gathering mode: 'lightweight' (README + docs, minimal tokens) or "
+        "'comprehensive' (full repo analysis, more tokens). Default: lightweight",
+    )
+    parser.add_argument(
+        "--ignore-pattern",
+        action="append",
+        dest="ignore_patterns",
+        help="Additional glob patterns to ignore (can be repeated). "
+        "Built-in patterns: node_modules, .venv, __pycache__, etc.",
+    )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="Print debug information during generation",
@@ -36,7 +50,13 @@ def main() -> int:
     config = Config.from_env(
         output_dir=args.output_dir,
         debug=args.debug,
+        context_mode=args.context_mode,
+        repo_root=args.repo_path,
     )
+
+    # Override ignore patterns from CLI args if provided
+    if args.ignore_patterns:
+        config.ignore_patterns = (config.ignore_patterns or []) + args.ignore_patterns
 
     renderer = ComicRenderer(config)
 

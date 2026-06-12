@@ -21,7 +21,18 @@ class ComicRenderer:
         self.image_client = ImageClient.from_config(config)
 
     def render(self, repo_path: str, generate_images: bool = True) -> Dict[str, Any]:
-        metadata = analyze_repository(repo_path)
+        metadata = analyze_repository(
+            repo_path,
+            context_mode=self.config.context_mode,
+            custom_ignore_patterns=self.config.ignore_patterns,
+            max_content_size_bytes=self.config.max_content_size_bytes,
+        )
+
+        # Log content warnings if in debug mode
+        if metadata.get("content_warnings") and self.config.debug:
+            for warning in metadata["content_warnings"]:
+                print(f"⚠️  {warning}", flush=True)
+
         prompt = build_scene_prompt(metadata)
         raw_output = self.llm_client.generate_text(prompt)
         scenes = parse_scene_output(raw_output)

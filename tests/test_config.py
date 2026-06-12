@@ -72,10 +72,24 @@ def test_config_from_env_reads_gemini_api_key(monkeypatch) -> None:
     assert config.image_api_key == "test-gemini-key"
 
 
-def test_config_from_env_reads_render_mode(monkeypatch) -> None:
-    monkeypatch.setenv("CODE_COMIC_RENDER_MODE", "html")
+def test_config_default_render_mode_is_html_mermaid(monkeypatch) -> None:
+    monkeypatch.delenv("CODE_COMIC_RENDER_MODE", raising=False)
 
     config = Config.from_env(output_dir="output", debug=False)
 
-    assert config.render_mode == "html"
+    assert config.render_mode == "html-mermaid"
 
+
+def test_config_from_env_reads_render_mode(monkeypatch) -> None:
+    monkeypatch.setenv("CODE_COMIC_RENDER_MODE", "html-image")
+
+    config = Config.from_env(output_dir="output", debug=False)
+
+    assert config.render_mode == "html-image"
+
+
+def test_config_from_env_rejects_invalid_render_mode(monkeypatch) -> None:
+    monkeypatch.setenv("CODE_COMIC_RENDER_MODE", "image")
+
+    with pytest.raises(ValueError, match="Invalid render_mode"):
+        Config.from_env(output_dir="output", debug=False)

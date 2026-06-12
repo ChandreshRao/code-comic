@@ -36,6 +36,9 @@ code-comic-mcp = "src.mcp_server:main"
 # Default: "lightweight" to minimize token usage
 # context-mode = "lightweight"
 
+# Render mode: "html-mermaid" (Mermaid diagrams, no image API) or "html-image" (PNG panels in HTML)
+# render-mode = "html-mermaid"
+
 # Custom ignore patterns (in addition to .gitignore and built-in defaults)
 # ignore-patterns = ["*.tmp", "custom_build/", "temp_*"]
 

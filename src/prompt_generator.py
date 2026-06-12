@@ -142,7 +142,7 @@ def _creative_guidelines() -> str:
 
 def _prompt_template_path(render_mode: str) -> Path:
     folder = Path(__file__).resolve().parent / "prompts"
-    filename = "html_scene_prompt.md" if render_mode == "html" else "scene_prompt.md"
+    filename = "html_scene_prompt.md" if render_mode == "html-mermaid" else "scene_prompt.md"
     return folder / filename
 
 
@@ -163,7 +163,7 @@ def _render_template(template: str, mapping: Dict[str, str]) -> str:
         return template
 
 
-def build_scene_prompt(repo_metadata: Dict[str, Any], render_mode: str = "image") -> str:
+def build_scene_prompt(repo_metadata: Dict[str, Any], render_mode: str = "html-mermaid") -> str:
     project = _extract_project_name(repo_metadata)
     bullets: List[str] = []
     bullets.append(f"Project name: {project}")
@@ -234,7 +234,7 @@ def build_scene_prompt(repo_metadata: Dict[str, Any], render_mode: str = "image"
             },
         )
 
-    if render_mode == "html":
+    if render_mode == "html-mermaid":
         prompt = (
             f"You are a developer-turned-cartoonist creating a 4-panel comic about '{project}'. "
             f"{guidelines} "
@@ -575,7 +575,7 @@ def enrich_scenes(scenes: List[Dict[str, str]], metadata: Dict[str, Any]) -> Lis
     return enriched
 
 
-def resolve_scenes(raw_output: str, metadata: Dict[str, Any], render_mode: str = "image") -> List[Dict[str, str]]:
+def resolve_scenes(raw_output: str, metadata: Dict[str, Any], render_mode: str = "html-mermaid") -> List[Dict[str, str]]:
     """Parse LLM output, validate scenes, and fall back or enrich using repository metadata."""
     if raw_output.startswith("[Fallback LLM]"):
         return render_fallback_scenes(metadata)
@@ -591,7 +591,7 @@ def resolve_scenes(raw_output: str, metadata: Dict[str, Any], render_mode: str =
         return render_fallback_scenes(metadata)
 
     needs_enrichment = (
-        render_mode == "html"
+        render_mode == "html-mermaid"
         or any(not scene.get("mermaid", "").strip() for scene in scenes)
         or any(
             _looks_like_image_prompt(scene.get("speech_bubble") or scene.get("panel_text", ""))
@@ -611,7 +611,7 @@ def generate_image_prompts_from_repo(repo_path: str, output_dir: str, llm_client
     from .utils import ensure_output_dir, save_text
 
     metadata = analyze_repository(repo_path)
-    scene_request = build_scene_prompt(metadata)
+    scene_request = build_scene_prompt(metadata, render_mode="html-image")
     raw_output = llm_client.generate_text(scene_request)
     scenes = resolve_scenes(raw_output, metadata)
 

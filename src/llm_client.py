@@ -5,6 +5,9 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
+DEFAULT_LLM_MODELS = ["gemini"]
+
+
 class LLMClient(ABC):
     def __init__(self, api_key: str | None, model: str) -> None:
         self.api_key = api_key
@@ -16,29 +19,76 @@ class LLMClient(ABC):
 
     @classmethod
     def from_config(cls, config: Any) -> "LLMClient":
-        provider = getattr(config, "llm_provider_resolved", None) or "openai"
-        provider = provider.lower()
-        model = getattr(config, "llm_model_default", "gemini")
-        if provider == "openai":
-            try:
-                return OpenAIClient(config.llm_api_key, model)
-            except Exception:
-                return FallbackLLMClient(config.llm_api_key, model)
+        models = getattr(config, "llm_models_resolved", None) or DEFAULT_LLM_MODELS
+        clients: list[LLMClient] = []
+        for model in models:
+            provider = cls._resolve_provider(config, model)
+            client = cls._create_client(config, provider, model)
+            if client is not None:
+                clients.append(client)
+
+        if len(clients) > 1:
+            return ChainedLLMClient(clients)
+        if len(clients) == 1:
+            return clients[0]
+        return FallbackLLMClient(getattr(config, "llm_api_key", None), models[0])
+
+    @staticmethod
+    def _resolve_provider(config: Any, model: str) -> str:
+        infer = getattr(config, "_infer_provider_from_model", None)
+        if infer is not None:
+            inferred = infer(model)
+            if inferred:
+                return inferred
+        explicit = getattr(config, "llm_provider", None)
+        if explicit:
+            return explicit.lower()
+        return "openai"
+
+    @staticmethod
+    def _api_key_for_provider(config: Any, provider: str) -> str | None:
         if provider in ("gemini", "google"):
-            # Check for the Google GenAI SDK or the legacy generativeai SDK.
-            try:
-                importlib.import_module("google.genai")
-            except Exception:
+            return getattr(config, "gemini_api_key", None) or getattr(config, "llm_api_key", None)
+        if provider == "huggingface":
+            return getattr(config, "hf_api_key", None) or getattr(config, "llm_api_key", None)
+        return getattr(config, "llm_api_key", None)
+
+    @classmethod
+    def _create_client(cls, config: Any, provider: str, model: str) -> LLMClient | None:
+        provider = provider.lower()
+        api_key = cls._api_key_for_provider(config, provider)
+        try:
+            if provider == "openai":
+                return OpenAIClient(api_key, model)
+            if provider in ("gemini", "google"):
                 try:
-                    importlib.import_module("google.generativeai")  # type: ignore
+                    importlib.import_module("google.genai")
                 except Exception:
-                    return FallbackLLMClient(config.llm_api_key, model)
+                    try:
+                        importlib.import_module("google.generativeai")  # type: ignore
+                    except Exception:
+                        return None
+                return GeminiClient(api_key, model)
+            if provider in ("huggingface", "hf"):
+                return HuggingFaceLLMClient(api_key, model)
+        except Exception:
+            return None
+        return None
+
+
+class ChainedLLMClient(LLMClient):
+    def __init__(self, clients: list[LLMClient]) -> None:
+        super().__init__(None, clients[0].model if clients else "")
+        self._clients = clients
+
+    def generate_text(self, prompt: str) -> str:
+        errors: list[str] = []
+        for client in self._clients:
             try:
-                return GeminiClient(config.llm_api_key, model)
-            except Exception:
-                return FallbackLLMClient(config.llm_api_key, model)
-        # default fallback
-        return FallbackLLMClient(config.llm_api_key, model)
+                return client.generate_text(prompt)
+            except RuntimeError as exc:
+                errors.append(f"{client.__class__.__name__} ({client.model}): {exc}")
+        raise RuntimeError("All LLM providers failed. " + "; ".join(errors))
 
 
 class GeminiClient(LLMClient):
@@ -82,6 +132,54 @@ class GeminiClient(LLMClient):
             ) from exc
         except Exception as exc:
             raise RuntimeError(f"Gemini LLM request failed: {exc}") from exc
+
+
+class HuggingFaceLLMClient(LLMClient):
+    _SYSTEM_PROMPT = (
+        "You are a helpful assistant that writes comic scene descriptions."
+    )
+
+    def generate_text(self, prompt: str) -> str:
+        try:
+            from huggingface_hub import InferenceClient
+
+            client = InferenceClient(token=self.api_key, model=self.model)
+            messages = [
+                {"role": "system", "content": self._SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ]
+            try:
+                response = client.chat_completion(
+                    messages=messages,
+                    max_tokens=700,
+                )
+                content = response.choices[0].message.content
+                if content:
+                    return content.strip()
+            except Exception:
+                pass
+
+            generated = client.text_generation(
+                prompt,
+                max_new_tokens=700,
+                return_full_text=False,
+            )
+            if isinstance(generated, list):
+                text = generated[0].get("generated_text", "") if generated else ""
+            else:
+                text = str(generated)
+            if not text.strip():
+                raise RuntimeError("Hugging Face returned empty text")
+            return text.strip()
+        except ModuleNotFoundError as exc:
+            raise RuntimeError(
+                "Hugging Face LLM request failed: huggingface_hub is not installed. "
+                "Install it with `pip install huggingface_hub` and try again."
+            ) from exc
+        except RuntimeError:
+            raise
+        except Exception as exc:
+            raise RuntimeError(f"Hugging Face LLM request failed: {exc}") from exc
 
 
 class OpenAIClient(LLMClient):

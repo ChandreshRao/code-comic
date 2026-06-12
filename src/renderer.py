@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import sys
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .analyzer import analyze_repository
-from .html_renderer import render_comic_html
+from .log_setup import get_logger
+from .html_renderer import render_comic_html, render_comic_html_with_images
 from .image_client import ImageClient
 from .llm_client import LLMClient
 from .prompt_generator import (
@@ -15,6 +16,7 @@ from .prompt_generator import (
 from .utils import ensure_output_dir, save_json, save_text
 
 _IMAGE_PROMPT_PREFIX = "Comic book panel, clean line art, tech humor style: "
+logger = get_logger("renderer")
 
 
 def _scene_prompt_text(scene: dict, *, for_image: bool = False) -> str:
@@ -22,6 +24,16 @@ def _scene_prompt_text(scene: dict, *, for_image: bool = False) -> str:
         panel_text = scene.get("panel_text") or scene.get("speech_bubble", "")
         return f"{_IMAGE_PROMPT_PREFIX}{panel_text}"
     return scene.get("speech_bubble") or scene.get("panel_text", "")
+
+
+def _html_filename_from_repo(repo_path: str) -> str:
+    repo_name = Path(repo_path).name
+    if not repo_name:
+        repo_name = "repo"
+    repo_name = re.sub(r"[^A-Za-z0-9_-]+", "-", repo_name).strip("-")
+    if not repo_name:
+        repo_name = "repo"
+    return f"{repo_name}-comic.html"
 
 
 class ComicRenderer:
@@ -37,7 +49,7 @@ class ComicRenderer:
         return self._image_client
 
     def render(self, repo_path: str) -> Dict[str, Any]:
-        render_mode = getattr(self.config, "render_mode", "image")
+        render_mode = getattr(self.config, "render_mode", "html-mermaid")
         metadata = analyze_repository(
             repo_path,
             context_mode=self.config.context_mode,
@@ -47,10 +59,14 @@ class ComicRenderer:
 
         if metadata.get("content_warnings") and self.config.debug:
             for warning in metadata["content_warnings"]:
-                print(f"⚠️  {warning}", flush=True)
+                logger.warning("Content warning: %s", warning)
 
         prompt = build_scene_prompt(metadata, render_mode=render_mode)
-        raw_output = self.llm_client.generate_text(prompt)
+        try:
+            raw_output = self.llm_client.generate_text(prompt)
+        except RuntimeError as exc:
+            logger.warning("LLM generation failed (%s). Using template-based scenes.", exc)
+            raw_output = "[Fallback LLM]"
         scenes = resolve_scenes(raw_output, metadata, render_mode=render_mode)
 
         output_dir = ensure_output_dir(self.config.output_dir)
@@ -62,53 +78,53 @@ class ComicRenderer:
         html_file: Optional[Path] = None
         render_mode_used = render_mode
         fallback: Optional[str] = None
+        html_path = output_dir / _html_filename_from_repo(repo_path)
 
         for idx, scene in enumerate(scenes, start=1):
-            prompt_text = _scene_prompt_text(scene, for_image=render_mode == "image")
+            prompt_text = _scene_prompt_text(scene, for_image=render_mode == "html-image")
             prompt_path = output_dir / f"prompt-{idx}.txt"
             save_text(prompt_path, prompt_text)
             prompt_files.append(prompt_path)
 
-        if render_mode == "text":
-            for idx, scene in enumerate(scenes, start=1):
-                text_path = output_dir / f"panel-{idx}.txt"
-                save_text(text_path, scene.get("speech_bubble") or scene.get("panel_text", ""))
-                image_files.append(text_path)
+        if render_mode == "html-mermaid":
+            html_file = render_comic_html(scenes, metadata, html_path)
 
-        elif render_mode == "html":
-            html_file = render_comic_html(scenes, metadata, output_dir / "comic.html")
-
-        else:
+        elif render_mode == "html-image":
+            images_dir = output_dir / "images"
+            images_dir.mkdir(parents=True, exist_ok=True)
+            image_rel_paths: List[str] = []
             image_failed = False
+
             for idx in range(1, len(scenes) + 1):
-                output_path = output_dir / f"panel-{idx}.png"
+                output_path = images_dir / f"panel-{idx}.png"
                 try:
                     prompt_text = prompt_files[idx - 1].read_text(encoding="utf-8")
                     image_path = self.image_client.generate_image(prompt_text, output_path)
                     image_files.append(image_path)
+                    image_rel_paths.append(f"images/panel-{idx}.png")
                 except RuntimeError as exc:
                     if not image_failed:
-                        print(
-                            f"Warning: Image generation failed ({exc}). "
-                            "Falling back to HTML/Mermaid comic.",
-                            file=sys.stderr,
+                        logger.warning(
+                            "Image generation failed (%s). Falling back to HTML/Mermaid comic.",
+                            exc,
                         )
                         image_failed = True
                     break
 
             if image_failed:
-                scenes = resolve_scenes(raw_output, metadata, render_mode="html")
+                scenes = resolve_scenes(raw_output, metadata, render_mode="html-mermaid")
                 save_json(output_dir / "comic_scenes.json", scenes)
                 for idx, scene in enumerate(scenes, start=1):
                     prompt_text = scene.get("speech_bubble") or scene.get("panel_text", "")
                     save_text(output_dir / f"prompt-{idx}.txt", prompt_text)
-                html_file = render_comic_html(scenes, metadata, output_dir / "comic.html")
-                render_mode_used = "html"
-                fallback = "html"
-            elif len(image_files) < len(scenes):
-                html_file = render_comic_html(scenes, metadata, output_dir / "comic.html")
-                render_mode_used = "html"
-                fallback = "html"
+                html_file = render_comic_html(scenes, metadata, html_path)
+                render_mode_used = "html-mermaid"
+                fallback = "html-mermaid"
+                image_files = []
+            else:
+                html_file = render_comic_html_with_images(
+                    scenes, metadata, html_path, image_rel_paths
+                )
 
         return {
             "output_dir": str(output_dir),

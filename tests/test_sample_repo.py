@@ -37,15 +37,22 @@ def test_renderer_generates_png_panels_from_sample_repo(
         lambda config: FallbackImageClient(None, "fallback"),
     )
 
-    config = Config.from_env(output_dir=str(tmp_path), debug=False, render_mode="image")
+    config = Config.from_env(output_dir=str(tmp_path), debug=False, render_mode="html-image")
     renderer = ComicRenderer(config)
     result = renderer.render(str(sample_repo_path))
 
     image_files = [Path(p) for p in result["image_files"]]
     assert len(image_files) == 4
     assert all(path.suffix == ".png" for path in image_files)
+    assert all(path.parent.name == "images" for path in image_files)
     assert all(path.exists() for path in image_files)
     assert all(path.stat().st_size > 0 for path in image_files)
+
+    expected_html = tmp_path / "sample-repo-comic.html"
+    assert result["html_file"] == str(expected_html)
+    assert expected_html.exists()
+    html_content = expected_html.read_text(encoding="utf-8")
+    assert '<img src="images/panel-1.png"' in html_content
 
     metadata_path = tmp_path / "repo_metadata.json"
     assert metadata_path.exists()
@@ -60,7 +67,7 @@ def test_live_image_generation_from_sample_repo(
     if os.environ.get("CODE_COMIC_RUN_LIVE") != "1":
         pytest.skip("Set CODE_COMIC_RUN_LIVE=1 to run live image generation test")
 
-    config = Config.from_env(output_dir=str(tmp_path), debug=True, render_mode="image")
+    config = Config.from_env(output_dir=str(tmp_path), debug=True, render_mode="html-image")
     if not config.llm_api_key:
         pytest.skip("GEMINI_API_KEY, CODE_COMIC_LLM_API_KEY, or OPENAI_API_KEY required for live test")
     if not config.image_api_key and not config.hf_api_key and not config.gemini_api_key:
@@ -69,15 +76,16 @@ def test_live_image_generation_from_sample_repo(
     renderer = ComicRenderer(config)
     result = renderer.render(str(sample_repo_path))
 
-    if result.get("fallback") == "html":
+    if result.get("fallback") == "html-mermaid":
         pytest.skip(
             "Image API unavailable or model access denied; "
             "check HF_TOKEN and/or GEMINI_API_KEY for image model access"
         )
 
-    assert result["render_mode_used"] == "image"
+    assert result["render_mode_used"] == "html-image"
     image_files = [Path(p) for p in result["image_files"]]
     assert len(image_files) == 4
     assert all(path.suffix == ".png" for path in image_files)
+    assert all(path.parent.name == "images" for path in image_files)
     assert all(path.exists() for path in image_files)
     assert all(path.stat().st_size > 0 for path in image_files)

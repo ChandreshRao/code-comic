@@ -43,11 +43,26 @@ def test_build_scene_prompt_html_mode_asks_for_mermaid() -> None:
         "total_files": 10,
     }
 
-    prompt = build_scene_prompt(metadata, render_mode="html")
+    prompt = build_scene_prompt(metadata, render_mode="html-mermaid")
 
     assert "speech_bubble" in prompt
     assert "mermaid" in prompt
     assert "witty tech comic" in prompt
+
+
+def test_build_scene_prompt_html_image_mode_asks_for_panel_text() -> None:
+    metadata = {
+        "path": "/tmp/repo",
+        "top_level": ["src"],
+        "languages": ["py"],
+        "package_files": ["pyproject.toml"],
+        "total_files": 10,
+    }
+
+    prompt = build_scene_prompt(metadata, render_mode="html-image")
+
+    assert "panel_text" in prompt
+    assert "mermaid" not in prompt
 
 
 def test_render_fallback_scenes_includes_mermaid() -> None:
@@ -112,7 +127,7 @@ def test_resolve_scenes_rejects_garbage_and_uses_metadata_fallback() -> None:
         "content": {"README.md": "# TinyCalc\n\nA calculator."},
     }
     garbage = "```json\n[ { \"title\": \"Meet TinyCalc!\""
-    scenes = resolve_scenes(garbage, metadata, render_mode="html")
+    scenes = resolve_scenes(garbage, metadata, render_mode="html-mermaid")
 
     assert "TinyCalc" in scenes[0]["title"]
     assert "main.py" in scenes[1]["mermaid"] or "calculator" in scenes[1]["mermaid"]

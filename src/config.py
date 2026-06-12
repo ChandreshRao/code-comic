@@ -7,6 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from .image_client import DEFAULT_IMAGE_MODELS
+from .llm_client import DEFAULT_LLM_MODELS
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _dotenv_loaded = False
@@ -31,6 +32,9 @@ except ModuleNotFoundError:
         tomllib = None  # type: ignore
 
 
+VALID_RENDER_MODES = ("html-mermaid", "html-image")
+
+
 @dataclass
 class Config:
     output_dir: str
@@ -43,7 +47,7 @@ class Config:
     hf_api_key: str | None = None
     gemini_api_key: str | None = None
     context_mode: str = "lightweight"  # "lightweight" or "comprehensive"
-    render_mode: str = "image"  # "image", "html", or "text"
+    render_mode: str = "html-mermaid"  # "html-mermaid" or "html-image"
     max_content_size_bytes: int = 500_000  # 500KB threshold for warnings
     ignore_patterns: list[str] | None = None  # Additional patterns to ignore
     debug: bool = False
@@ -101,7 +105,7 @@ class Config:
         image_provider: str | None = None,
         debug: bool = False,
         context_mode: str = "lightweight",
-        render_mode: str = "image",
+        render_mode: str = "html-mermaid",
         repo_root: Path | str | None = None,
     ) -> "Config":
         _ensure_dotenv_loaded()
@@ -126,6 +130,11 @@ class Config:
         env_render_mode = os.environ.get("CODE_COMIC_RENDER_MODE")
         pyproject_render_mode = pyproject_config.get("render-mode") or pyproject_config.get("render_mode")
         final_render_mode = env_render_mode or pyproject_render_mode or render_mode
+        if final_render_mode not in VALID_RENDER_MODES:
+            allowed = ", ".join(VALID_RENDER_MODES)
+            raise ValueError(
+                f"Invalid render_mode '{final_render_mode}'. Allowed values: {allowed}"
+            )
 
         # Parse ignore patterns (env > pyproject.toml > default)
         env_ignore_patterns = os.environ.get("CODE_COMIC_IGNORE_PATTERNS")
@@ -182,11 +191,14 @@ class Config:
         )
 
     @property
-    def llm_model_default(self) -> str:
+    def llm_models_resolved(self) -> list[str]:
         if self.llm_models and len(self.llm_models) > 0:
-            return self.llm_models[0]
-        # default fallback LLM
-        return "gemini"
+            return self.llm_models
+        return list(DEFAULT_LLM_MODELS)
+
+    @property
+    def llm_model_default(self) -> str:
+        return self.llm_models_resolved[0]
 
     @property
     def image_models_resolved(self) -> list[str]:

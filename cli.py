@@ -19,17 +19,12 @@ def parse_arguments() -> argparse.Namespace:
         help="Directory to write scene and image outputs",
     )
     parser.add_argument(
-        "--no-image",
-        action="store_true",
-        help="Generate only the comic descriptions, no image files (alias for --render-mode text)",
-    )
-    parser.add_argument(
         "--render-mode",
-        choices=["image", "html", "text"],
-        default="image",
-        help="Output format: 'image' (PNG panels, auto-fallback to HTML on failure), "
-        "'html' (Mermaid diagram comic in comic.html), or 'text' (panel text files only). "
-        "Default: image",
+        choices=["html-mermaid", "html-image"],
+        default="html-mermaid",
+        help="Output format: 'html-mermaid' (Mermaid diagram comic in {repo-name}-comic.html), "
+        "'html-image' (generated PNG panels in images/ referenced from HTML; "
+        "auto-fallback to html-mermaid on image failure). Default: html-mermaid",
     )
     parser.add_argument(
         "--context-mode",
@@ -55,13 +50,12 @@ def parse_arguments() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_arguments()
-    render_mode = "text" if args.no_image else args.render_mode
 
     config = Config.from_env(
         output_dir=args.output_dir,
         debug=args.debug,
         context_mode=args.context_mode,
-        render_mode=render_mode,
+        render_mode=args.render_mode,
         repo_root=args.repo_path,
     )
 
@@ -76,7 +70,7 @@ def main() -> int:
         print(f"Saved comic to: {result['output_dir']}")
         if result.get("html_file"):
             print(f"HTML comic: {result['html_file']}")
-        if result.get("fallback") == "html":
+        if result.get("fallback") == "html-mermaid":
             print("Note: Image generation failed; fell back to HTML/Mermaid comic.", file=sys.stderr)
         for scene in result["scenes"]:
             print(f"- {scene['title']}: {scene['description']}")

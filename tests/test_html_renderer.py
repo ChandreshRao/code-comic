@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.html_renderer import render_comic_html
+from src.html_renderer import render_comic_html, render_comic_html_with_images
 from src.prompt_generator import _build_fallback_mermaid, build_scene_prompt
 
 
@@ -15,7 +15,7 @@ def test_build_scene_prompt_html_mode_asks_for_mermaid() -> None:
         "total_files": 10,
     }
 
-    prompt = build_scene_prompt(metadata, render_mode="html")
+    prompt = build_scene_prompt(metadata, render_mode="html-mermaid")
 
     assert "speech_bubble" in prompt
     assert "mermaid" in prompt
@@ -76,3 +76,46 @@ def test_build_fallback_mermaid_produces_valid_syntax() -> None:
         diagram = _build_fallback_mermaid(metadata, idx)
         assert "flowchart" in diagram
         assert "-->" in diagram
+
+
+def test_render_comic_html_with_images_creates_img_tags(tmp_path: Path) -> None:
+    scenes = [
+        {
+            "title": "Panel 1",
+            "description": "Intro scene.",
+            "speech_bubble": "Hello world!",
+            "panel_text": "Hello world!",
+        },
+        {
+            "title": "Panel 2",
+            "description": "Build scene.",
+            "speech_bubble": "Building features.",
+            "panel_text": "Building features.",
+        },
+        {
+            "title": "Panel 3",
+            "description": "Review scene.",
+            "speech_bubble": "Code review time.",
+            "panel_text": "Code review time.",
+        },
+        {
+            "title": "Panel 4",
+            "description": "Ship scene.",
+            "speech_bubble": "Ship it!",
+            "panel_text": "Ship it!",
+        },
+    ]
+    metadata = {"path": "/tmp/repo", "languages": ["py"], "total_files": 42}
+    image_rel_paths = [f"images/panel-{i}.png" for i in range(1, 5)]
+
+    output_path = tmp_path / "sample-repo-comic.html"
+    result = render_comic_html_with_images(scenes, metadata, output_path, image_rel_paths)
+
+    assert result == output_path
+    assert output_path.exists()
+    content = output_path.read_text(encoding="utf-8")
+    assert "comic-grid" in content
+    assert '<img src="images/panel-1.png"' in content
+    assert 'class="mermaid"' not in content
+    assert "speech-bubble" in content
+    assert "mermaid.esm.min.mjs" not in content

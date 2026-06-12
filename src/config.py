@@ -6,6 +6,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .image_client import DEFAULT_IMAGE_MODELS
+
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _dotenv_loaded = False
 
@@ -38,6 +40,8 @@ class Config:
     image_models: list[str] | None
     llm_api_key: str | None
     image_api_key: str | None
+    hf_api_key: str | None = None
+    gemini_api_key: str | None = None
     context_mode: str = "lightweight"  # "lightweight" or "comprehensive"
     render_mode: str = "image"  # "image", "html", or "text"
     max_content_size_bytes: int = 500_000  # 500KB threshold for warnings
@@ -147,14 +151,29 @@ class Config:
             except ValueError:
                 pass
 
+        hf_api_key = (
+            os.environ.get("HF_TOKEN")
+            or os.environ.get("HUGGINGFACE_API_KEY")
+            or os.environ.get("CODE_COMIC_HF_API_KEY")
+        )
+        gemini_api_key = os.environ.get("GEMINI_API_KEY")
+        image_api_key = (
+            os.environ.get("CODE_COMIC_IMAGE_API_KEY")
+            or hf_api_key
+            or gemini_api_key
+            or os.environ.get("OPENAI_API_KEY")
+        )
+
         return cls(
             output_dir=output_dir,
             llm_provider=llm_provider or os.environ.get("CODE_COMIC_LLM_PROVIDER"),
             image_provider=image_provider or os.environ.get("CODE_COMIC_IMAGE_PROVIDER"),
             llm_models=llm_models,
             image_models=image_models,
-            llm_api_key=os.environ.get("CODE_COMIC_LLM_API_KEY") or os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY"),
-            image_api_key=os.environ.get("CODE_COMIC_IMAGE_API_KEY") or os.environ.get("GEMINI_API_KEY") or os.environ.get("OPENAI_API_KEY"),
+            llm_api_key=os.environ.get("CODE_COMIC_LLM_API_KEY") or gemini_api_key or os.environ.get("OPENAI_API_KEY"),
+            image_api_key=image_api_key,
+            hf_api_key=hf_api_key,
+            gemini_api_key=gemini_api_key,
             context_mode=final_context_mode,
             render_mode=final_render_mode,
             max_content_size_bytes=max_content_size_bytes,
@@ -170,11 +189,14 @@ class Config:
         return "gemini"
 
     @property
-    def image_model_default(self) -> str:
+    def image_models_resolved(self) -> list[str]:
         if self.image_models and len(self.image_models) > 0:
-            return self.image_models[0]
-        # default fallback image model for free-tier preference
-        return "gemini-2.5-flash-image"
+            return self.image_models
+        return list(DEFAULT_IMAGE_MODELS)
+
+    @property
+    def image_model_default(self) -> str:
+        return self.image_models_resolved[0]
 
     def _infer_provider_from_model(self, model: str) -> str | None:
         m = model.lower()
@@ -183,9 +205,11 @@ class Config:
         if "gemini" in m or m.startswith("google"):
             return "gemini"
         if m.startswith("stability") or "stable-diffusion" in m or "stablediffusion" in m:
-            return "stablediffusion"
+            return "huggingface"
         if "github" in m:
             return "github"
+        if "/" in m:
+            return "huggingface"
         return None
 
     @property
@@ -202,4 +226,4 @@ class Config:
             return self.image_provider
         model = self.image_model_default
         inferred = self._infer_provider_from_model(model)
-        return inferred or "openai"
+        return inferred or "huggingface"

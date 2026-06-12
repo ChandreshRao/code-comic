@@ -5,7 +5,7 @@ A Python CLI application that analyzes a GitHub repository architecture and gene
 - Analyze a local Git repository path
 - Extract repository metadata and code structure
 - Generate a 4-scene comic script using an LLM prompt
-- Create placeholder panel images via an image API or fallback renderer
+- Generate comic panel images via Hugging Face (`huggingface_hub`) by default, with Gemini as secondary fallback, and HTML/Mermaid fallback on total failure
 
 ## Installation
 
@@ -32,7 +32,7 @@ python cli.py path/to/repo
 
 Optional arguments:
 - `--output-dir`: directory to write outputs (default: `output`)
-- `--render-mode`: output format — `image` (PNG panels, auto-fallback to HTML on failure), `html` (Mermaid diagram comic), or `text` (text panels only). Default: `image`
+- `--render-mode`: output format — `image` (PNG panels via Hugging Face Inference API by default, Gemini fallback; auto-fallback to HTML only when all image APIs fail), `html` (Mermaid diagram comic, no image API calls), or `text` (text panels only). Default: `image`
 - `--no-image`: alias for `--render-mode text`
 - `--context-mode`: `lightweight` (README + docs, minimal tokens) or `comprehensive` (full repo analysis)
 - `--debug`: print debug details and re-raise exceptions
@@ -40,12 +40,13 @@ Optional arguments:
 ## Environment
 
 Recommended environment variables for provider integration (set in `.env`; loaded automatically):
-- `GEMINI_API_KEY` (used for both LLM and image when no provider-specific key is set)
+- `HF_TOKEN` or `HUGGINGFACE_API_KEY` (default image provider via Hugging Face Inference API)
+- `GEMINI_API_KEY` (secondary image fallback and default LLM when no provider-specific key is set)
 - `CODE_COMIC_LLM_API_KEY` or `OPENAI_API_KEY`
-- `CODE_COMIC_IMAGE_API_KEY` or `OPENAI_API_KEY`
+- `CODE_COMIC_IMAGE_API_KEY` (overrides provider-specific image keys when set)
 - `CODE_COMIC_LLM_MODELS` (comma-separated list; first item is default)
-- `CODE_COMIC_IMAGE_MODELS` (comma-separated list; first item is default). Example: `gemini-2.5-flash-image`
-- `CODE_COMIC_LLM_PROVIDER` and `CODE_COMIC_IMAGE_PROVIDER` are optional; when omitted the provider will be inferred from the model identifier (e.g., `gemini`, `openai/...`, `stability-ai/...`).
+- `CODE_COMIC_IMAGE_MODELS` (comma-separated list; first item is default, rest are fallbacks). Example: `black-forest-labs/FLUX.1-schnell,gemini-2.5-flash-image`
+- `CODE_COMIC_LLM_PROVIDER` and `CODE_COMIC_IMAGE_PROVIDER` are optional; when omitted the provider will be inferred from the model identifier (e.g., `black-forest-labs/...` → Hugging Face, `gemini-...` → Gemini).
 - `CODE_COMIC_RENDER_MODE`: `image`, `html`, or `text` (default: `image`)
 
 ### Virtual environment & .env
@@ -90,8 +91,8 @@ The CLI saves:
 - `repo_metadata.json`
 - `comic_scenes.json`
 - `prompt-1.txt` through `prompt-4.txt` (caption/prompt files for each panel)
-- `panel-1.png` through `panel-4.png` (when `--render-mode image` succeeds)
-- `comic.html` (when `--render-mode html`, or when image generation fails and auto-fallback kicks in)
+- `panel-1.png` through `panel-4.png` (default `--render-mode image` when Hugging Face or Gemini image API succeeds)
+- `comic.html` (when `--render-mode html`, or only when image generation fails and auto-fallback kicks in)
 - `panel-1.mmd` through `panel-4.mmd` (Mermaid source for each panel, HTML mode only)
 - `panel-1.txt` through `panel-4.txt` (when `--render-mode text` or `--no-image`)
 
@@ -123,9 +124,11 @@ pytest tests/test_sample_repo.py::test_renderer_generates_png_panels_from_sample
 python cli.py tests/fixtures/sample-repo --output-dir output/sample-test
 ```
 
-**Live image generation test** (requires API keys in `.env`):
+**Live image generation test** (requires `HF_TOKEN` and/or `GEMINI_API_KEY` in `.env`):
 
 ```bash
 set CODE_COMIC_RUN_LIVE=1
 pytest tests/test_sample_repo.py::test_live_image_generation_from_sample_repo -v
 ```
+
+If the image API is unavailable, the test skips with a message; the CLI still produces `comic.html` via auto-fallback.

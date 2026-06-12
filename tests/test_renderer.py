@@ -77,14 +77,17 @@ def test_renderer_saves_prompt_files_and_uses_them(tmp_path: Path, monkeypatch) 
     prompt_files = [Path(p) for p in result["prompt_files"]]
     assert len(prompt_files) == 4
     assert all(path.exists() for path in prompt_files)
-    assert prompt_files[0].read_text(encoding="utf-8") == "Hello repo!"
+    expected_prompt = "Comic book panel, clean line art, tech humor style: First prompt text."
+    assert prompt_files[0].read_text(encoding="utf-8") == expected_prompt
 
     image_files = [Path(p) for p in result["image_files"]]
     assert len(image_files) == 4
-    assert image_files[0].read_text(encoding="utf-8") == "IMAGE GENERATED FROM: Hello repo!"
+    assert image_files[0].read_text(encoding="utf-8") == f"IMAGE GENERATED FROM: {expected_prompt}"
 
     assert len(fake_image.generated) == 4
-    assert fake_image.generated[1]["prompt"] == "Build it!"
+    assert fake_image.generated[1]["prompt"] == (
+        "Comic book panel, clean line art, tech humor style: Second prompt text."
+    )
 
 
 def test_renderer_writes_prompt_files_even_without_images(tmp_path: Path, monkeypatch) -> None:

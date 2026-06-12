@@ -60,14 +60,24 @@ def test_live_image_generation_from_sample_repo(
     if os.environ.get("CODE_COMIC_RUN_LIVE") != "1":
         pytest.skip("Set CODE_COMIC_RUN_LIVE=1 to run live image generation test")
 
-    config = Config.from_env(output_dir=str(tmp_path), debug=True)
+    config = Config.from_env(output_dir=str(tmp_path), debug=True, render_mode="image")
     if not config.llm_api_key:
         pytest.skip("GEMINI_API_KEY, CODE_COMIC_LLM_API_KEY, or OPENAI_API_KEY required for live test")
+    if not config.image_api_key and not config.hf_api_key and not config.gemini_api_key:
+        pytest.skip("HF_TOKEN, GEMINI_API_KEY, or CODE_COMIC_IMAGE_API_KEY required for live image test")
 
     renderer = ComicRenderer(config)
-    result = renderer.render(str(sample_repo_path), generate_images=True)
+    result = renderer.render(str(sample_repo_path))
 
+    if result.get("fallback") == "html":
+        pytest.skip(
+            "Image API unavailable or model access denied; "
+            "check HF_TOKEN and/or GEMINI_API_KEY for image model access"
+        )
+
+    assert result["render_mode_used"] == "image"
     image_files = [Path(p) for p in result["image_files"]]
     assert len(image_files) == 4
+    assert all(path.suffix == ".png" for path in image_files)
     assert all(path.exists() for path in image_files)
     assert all(path.stat().st_size > 0 for path in image_files)

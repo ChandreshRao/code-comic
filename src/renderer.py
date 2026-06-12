@@ -14,6 +14,15 @@ from .prompt_generator import (
 )
 from .utils import ensure_output_dir, save_json, save_text
 
+_IMAGE_PROMPT_PREFIX = "Comic book panel, clean line art, tech humor style: "
+
+
+def _scene_prompt_text(scene: dict, *, for_image: bool = False) -> str:
+    if for_image:
+        panel_text = scene.get("panel_text") or scene.get("speech_bubble", "")
+        return f"{_IMAGE_PROMPT_PREFIX}{panel_text}"
+    return scene.get("speech_bubble") or scene.get("panel_text", "")
+
 
 class ComicRenderer:
     def __init__(self, config: Any) -> None:
@@ -55,7 +64,7 @@ class ComicRenderer:
         fallback: Optional[str] = None
 
         for idx, scene in enumerate(scenes, start=1):
-            prompt_text = scene.get("speech_bubble") or scene.get("panel_text", "")
+            prompt_text = _scene_prompt_text(scene, for_image=render_mode == "image")
             prompt_path = output_dir / f"prompt-{idx}.txt"
             save_text(prompt_path, prompt_text)
             prompt_files.append(prompt_path)

@@ -17,15 +17,20 @@ class ImageClient(ABC):
 
     @classmethod
     def from_config(cls, config: Any) -> "ImageClient":
-        provider = config.image_provider.lower()
+        provider = getattr(config, "image_provider_resolved", None) or "openai"
+        provider = provider.lower()
+        model = getattr(config, "image_model_default", "gemini-2.5-flash-image")
         if provider == "openai":
             try:
-                import openai
-
-                return OpenAIImageClient(config.image_api_key, config.image_model)
-            except ImportError:
-                return FallbackImageClient(config.image_api_key, config.image_model)
-        return FallbackImageClient(config.image_api_key, config.image_model)
+                return OpenAIImageClient(config.image_api_key, model)
+            except Exception:
+                return FallbackImageClient(config.image_api_key, model)
+        if provider in ("gemini", "google"):
+            try:
+                return GeminiImageClient(config.image_api_key, model)
+            except Exception:
+                return FallbackImageClient(config.image_api_key, model)
+        return FallbackImageClient(config.image_api_key, model)
 
 
 class OpenAIImageClient(ImageClient):
@@ -63,3 +68,18 @@ class FallbackImageClient(ImageClient):
                 encoding="utf-8",
             )
             return fallback_path
+
+
+class GeminiImageClient(ImageClient):
+    def generate_image(self, prompt: str, output_path: Path) -> Path:
+        # Placeholder adapter for Gemini image generation. If a Gemini image SDK
+        # is available, replace this implementation to call it. For now, raise
+        # a helpful error prompting installation/configuration.
+        try:
+            # Example: import google.generativeai as genai
+            raise ImportError("No Gemini image SDK configured")
+        except ImportError:
+            raise RuntimeError(
+                "Gemini image client is not available in this environment. "
+                "Install or configure the appropriate SDK, or set a different image provider."
+            )

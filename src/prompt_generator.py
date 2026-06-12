@@ -91,3 +91,31 @@ def render_fallback_scenes(repo_metadata: Dict[str, Any]) -> List[Dict[str, str]
             ),
         },
     ]
+
+
+def generate_image_prompts_from_repo(repo_path: str, output_dir: str, llm_client: Any) -> List[str]:
+    """Generate per-scene image prompt text files from repository context.
+
+    - Analyzes the repository, builds a scene-generation prompt, asks the LLM for scenes,
+      parses the scenes, and writes one `prompt-<n>.txt` per scene into `output_dir`.
+    - Returns list of file paths (strings).
+    """
+    from pathlib import Path
+    from .analyzer import analyze_repository
+    from .utils import ensure_output_dir, save_text
+
+    metadata = analyze_repository(repo_path)
+    scene_request = build_scene_prompt(metadata)
+    raw_output = llm_client.generate_text(scene_request)
+    scenes = parse_scene_output(raw_output)
+
+    out_dir = ensure_output_dir(output_dir)
+    paths: List[str] = []
+    for idx, scene in enumerate(scenes, start=1):
+        p = out_dir / f"prompt-{idx}.txt"
+        # Keep prompt minimal: use the panel_text which is typically the image description
+        panel_text = scene.get("panel_text", "")
+        save_text(p, panel_text)
+        paths.append(str(p))
+
+    return paths

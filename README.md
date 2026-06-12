@@ -40,8 +40,9 @@ Optional arguments:
 Recommended environment variables for provider integration:
 - `CODE_COMIC_LLM_API_KEY` or `OPENAI_API_KEY`
 - `CODE_COMIC_IMAGE_API_KEY` or `OPENAI_API_KEY`
-- `CODE_COMIC_LLM_PROVIDER` (default: `openai`)
-- `CODE_COMIC_IMAGE_PROVIDER` (default: `openai`)
+- `CODE_COMIC_LLM_MODELS` (comma-separated list; first item is default)
+- `CODE_COMIC_IMAGE_MODELS` (comma-separated list; first item is default). Example: `gemini-2.5-flash-image`
+- `CODE_COMIC_LLM_PROVIDER` and `CODE_COMIC_IMAGE_PROVIDER` are optional; when omitted the provider will be inferred from the model identifier (e.g., `gemini`, `openai/...`, `stability-ai/...`).
 
 ### Virtual environment & .env
 
@@ -84,6 +85,7 @@ Edit `.env` and set provider API keys and other values before running the CLI.
 The CLI saves:
 - `repo_metadata.json`
 - `comic_scenes.json`
+- `prompt-1.txt` through `prompt-4.txt` (image prompt files saved for each panel)
 - `panel-1.png` through `panel-4.png` (or `.txt` fallback files)
 
 ## Tests

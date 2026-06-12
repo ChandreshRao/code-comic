@@ -33,11 +33,17 @@ class ComicRenderer:
         save_json(output_dir / "repo_metadata.json", metadata)
         save_json(output_dir / "comic_scenes.json", scenes)
 
+        prompt_files: List[Path] = []
         image_files: List[Path] = []
         for idx, scene in enumerate(scenes, start=1):
+            prompt_path = output_dir / f"prompt-{idx}.txt"
+            save_text(prompt_path, scene["panel_text"])
+            prompt_files.append(prompt_path)
+
             output_path = output_dir / f"panel-{idx}.png"
             if generate_images:
-                image_path = self.image_client.generate_image(scene["panel_text"], output_path)
+                prompt_text = prompt_path.read_text(encoding="utf-8")
+                image_path = self.image_client.generate_image(prompt_text, output_path)
             else:
                 image_path = output_path.with_suffix(".txt")
                 save_text(image_path, scene["panel_text"])
@@ -47,5 +53,6 @@ class ComicRenderer:
             "output_dir": str(output_dir),
             "metadata": metadata,
             "scenes": scenes,
+            "prompt_files": [str(path) for path in prompt_files],
             "image_files": [str(path) for path in image_files],
         }

@@ -3,11 +3,13 @@ name = "code-comic"
 version = "0.1.0"
 description = "Generate a 4-scene comic explaining a GitHub repo architecture."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
     "requests>=2.0",
     "python-dotenv>=0.21",
-    "Pillow>=10.0"
+    "Pillow>=10.0",
+    "google-genai>=2.8.0",
+    "openai>=2.34.0"
 ]
 
 [project.optional-dependencies]

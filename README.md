@@ -32,17 +32,21 @@ python cli.py path/to/repo
 
 Optional arguments:
 - `--output-dir`: directory to write outputs (default: `output`)
-- `--no-image`: generate only text panels, not images
+- `--render-mode`: output format — `image` (PNG panels, auto-fallback to HTML on failure), `html` (Mermaid diagram comic), or `text` (text panels only). Default: `image`
+- `--no-image`: alias for `--render-mode text`
+- `--context-mode`: `lightweight` (README + docs, minimal tokens) or `comprehensive` (full repo analysis)
 - `--debug`: print debug details and re-raise exceptions
 
 ## Environment
 
-Recommended environment variables for provider integration:
+Recommended environment variables for provider integration (set in `.env`; loaded automatically):
+- `GEMINI_API_KEY` (used for both LLM and image when no provider-specific key is set)
 - `CODE_COMIC_LLM_API_KEY` or `OPENAI_API_KEY`
 - `CODE_COMIC_IMAGE_API_KEY` or `OPENAI_API_KEY`
 - `CODE_COMIC_LLM_MODELS` (comma-separated list; first item is default)
 - `CODE_COMIC_IMAGE_MODELS` (comma-separated list; first item is default). Example: `gemini-2.5-flash-image`
 - `CODE_COMIC_LLM_PROVIDER` and `CODE_COMIC_IMAGE_PROVIDER` are optional; when omitted the provider will be inferred from the model identifier (e.g., `gemini`, `openai/...`, `stability-ai/...`).
+- `CODE_COMIC_RENDER_MODE`: `image`, `html`, or `text` (default: `image`)
 
 ### Virtual environment & .env
 
@@ -85,11 +89,43 @@ Edit `.env` and set provider API keys and other values before running the CLI.
 The CLI saves:
 - `repo_metadata.json`
 - `comic_scenes.json`
-- `prompt-1.txt` through `prompt-4.txt` (image prompt files saved for each panel)
-- `panel-1.png` through `panel-4.png` (or `.txt` fallback files)
+- `prompt-1.txt` through `prompt-4.txt` (caption/prompt files for each panel)
+- `panel-1.png` through `panel-4.png` (when `--render-mode image` succeeds)
+- `comic.html` (when `--render-mode html`, or when image generation fails and auto-fallback kicks in)
+- `panel-1.mmd` through `panel-4.mmd` (Mermaid source for each panel, HTML mode only)
+- `panel-1.txt` through `panel-4.txt` (when `--render-mode text` or `--no-image`)
+
+For lowest token usage, use lightweight context and HTML rendering:
+
+```bash
+python cli.py path/to/repo --context-mode lightweight --render-mode html
+```
 
 ## Tests
 
 ```bash
 pytest tests
+```
+
+### Sample repo fixture
+
+A minimal TinyCalc project lives at `tests/fixtures/sample-repo/` for smoke-testing the full pipeline.
+
+**Offline smoke test** (no API keys; generates placeholder PNG panels):
+
+```bash
+pytest tests/test_sample_repo.py::test_renderer_generates_png_panels_from_sample_repo -v
+```
+
+**Manual CLI run** against the fixture:
+
+```bash
+python cli.py tests/fixtures/sample-repo --output-dir output/sample-test
+```
+
+**Live image generation test** (requires API keys in `.env`):
+
+```bash
+set CODE_COMIC_RUN_LIVE=1
+pytest tests/test_sample_repo.py::test_live_image_generation_from_sample_repo -v
 ```

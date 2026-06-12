@@ -87,10 +87,10 @@ class GeminiClient(LLMClient):
 class OpenAIClient(LLMClient):
     def generate_text(self, prompt: str) -> str:
         try:
-            import openai
+            from openai import OpenAI  # type: ignore
 
-            openai.api_key = self.api_key
-            response = openai.ChatCompletion.create(
+            client = OpenAI(api_key=self.api_key)
+            response = client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that writes comic scene descriptions."},

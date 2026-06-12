@@ -18,6 +18,11 @@ dev = [
     "pytest-mock>=3.0"
 ]
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: live API test (set CODE_COMIC_RUN_LIVE=1 to enable)",
+]
+
 [project.scripts]
 code-comic = "cli:main"
 

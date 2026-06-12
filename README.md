@@ -108,6 +108,15 @@ python cli.py path/to/repo --context-mode lightweight --render-mode html
 pytest tests
 ```
 
+## GitHub Copilot
+
+- See `docs/COPILOT_USAGE.md` for a short, file-oriented summary of how Copilot helped implement features and tests.
+
+## Use with GitHub Copilot (MCP)
+
+- Phase 2 (MCP) provides a thin stdio server exposing two tools: `analyze_repo` and `generate_comic`.
+- See `docs/MCP_SETUP.md` for setup and usage instructions (VS Code Copilot Agent integration).
+
 ### Sample repo fixture
 
 A minimal TinyCalc project lives at `tests/fixtures/sample-repo/` for smoke-testing the full pipeline.

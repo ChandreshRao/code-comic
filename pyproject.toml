@@ -10,7 +10,8 @@ dependencies = [
     "python-dotenv>=0.21",
     "Pillow>=10.0",
     "google-genai>=2.8.0",
-    "openai>=2.34.0"
+    "openai>=2.34.0",
+    "mcp[cli]>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +27,7 @@ markers = [
 
 [project.scripts]
 code-comic = "cli:main"
+code-comic-mcp = "src.mcp_server:main"
 
 # Optional: Configure code-comic behavior
 # Uncomment and customize as needed

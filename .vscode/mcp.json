@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "code-comic-root",
+      "description": "Absolute path to code-comic install (for user-profile config when using other repos)",
+      "default": "${workspaceFolder}"
+    }
+  ],
+  "servers": {
+    "code-comic": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--directory", "${input:code-comic-root}", "python", "-m", "src.mcp_server"]
+    }
+  }
+}

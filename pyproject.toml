@@ -1,0 +1,20 @@
+[project]
+name = "code-comic"
+version = "0.1.0"
+description = "Generate a 4-scene comic explaining a GitHub repo architecture."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.0",
+    "python-dotenv>=0.21",
+    "Pillow>=10.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.0"
+]
+
+[project.scripts]
+code-comic = "cli:main"

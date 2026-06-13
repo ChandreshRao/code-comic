@@ -74,6 +74,30 @@ class ComicRenderer:
             for warning in metadata["content_warnings"]:
                 logger.warning("Content warning: %s", warning)
 
+        # Optionally enrich repository content using Foundry IQ if configured.
+        try:
+            from .foundry_client import FoundryClient
+        except Exception:
+            FoundryClient = None
+
+        if FoundryClient is not None:
+            fc = FoundryClient.from_config(self.config)
+            if fc:
+                # Build a short query describing the repository to retrieve relevant knowledge.
+                q = (
+                    f"Repository path: {metadata.get('path')}; "
+                    f"Top-level entries: {', '.join(metadata.get('top_level', [])) or 'none'}; "
+                    f"Languages: {', '.join(metadata.get('languages', [])) or 'unknown'}"
+                )
+                try:
+                    foundry_text = fc.retrieve_knowledge(q, top_k=5)
+                except Exception:
+                    foundry_text = None
+                if foundry_text:
+                    metadata.setdefault('content', {})
+                    # Insert as a synthetic file so prompt_generator will include it in content_summary
+                    metadata['content']['__foundry_iq.txt'] = foundry_text
+
         prompt = build_scene_prompt(metadata, render_mode=render_mode)
         try:
             raw_output = self.llm_client.generate_text(prompt)

@@ -40,6 +40,28 @@ Before running the CLI or MCP tools, configure API keys in a `.env` file at the 
 
    Optional overrides (`CODE_COMIC_LLM_MODELS`, `CODE_COMIC_IMAGE_MODELS`, provider inference, and more) are documented in `.env.example`.
 
+## Microsoft IQ Integration
+
+This project supports Foundry IQ (agentic knowledge retrieval) to ground LLM outputs with cited enterprise sources. When enabled, code-comic can augment prompts with retrieved knowledge and citations from your organization's Foundry instance to reduce hallucination.
+
+To enable Foundry IQ:
+
+- Add the following to your `.env` at the repo root:
+
+  ```text
+  FOUNDRY_IQ_ENDPOINT=https://<your-foundry-endpoint>
+  FOUNDRY_IQ_API_KEY=<your-api-key>
+  ```
+
+- Optional settings (set if needed):
+  - `FOUNDRY_IQ_TIMEOUT` — request timeout in seconds (default: 10)
+  - `FOUNDRY_IQ_CACHE` — `true`/`false` to enable local caching of retrieved snippets
+
+Behavior:
+- If both `FOUNDRY_IQ_ENDPOINT` and `FOUNDRY_IQ_API_KEY` are present, code-comic will use Foundry IQ to enrich prompts before calling the configured LLM. Otherwise the project falls back to provider-only prompts as documented above.
+
+See `docs/SETUP.md` for step-by-step key setup and security guidance.
+
 ## Install, run, and test
 
 ### Install dependencies

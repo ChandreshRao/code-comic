@@ -1,0 +1,14 @@
+# .code-comic-ignore - Custom patterns to ignore during repo analysis
+# Format: Same as .gitignore (glob patterns are supported)
+# These patterns are merged with:
+#   1. .gitignore patterns (always loaded)
+#   2. Built-in defaults (node_modules, .venv, __pycache__, etc.)
+#
+# Examples:
+# *.tmp
+# custom_build/
+# temp_*
+# docs/auto-generated/
+# .env.local
+
+# Add your custom ignore patterns below:

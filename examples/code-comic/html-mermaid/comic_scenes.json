@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Your Code, But Funnier",
+    "description": "Ever wish your `GitHub repository architecture` was less of a headache and more of a punchline? Well, here's `code-comic` to the rescue. No, seriously.",
+    "panel_text": "Forget boring `README.md` files. This baby generates a `4-scene comic` from your code!",
+    "speech_bubble": "Forget boring `README.md` files. This baby generates a `4-scene comic` from your code!",
+    "mermaid": "graph TD\n    A[GitHubRepo] --> B{code-comic};\n    B --> C[4sceneComic];"
+  },
+  {
+    "title": "The Grand Entrance",
+    "description": "Before the magic, you gotta get it running. Just a few commands to install dependencies, then hit the `cli.py` for action.",
+    "panel_text": "First, `uv sync` or `pip install -r requirements.txt`. Then, watch `cli.py` kick things off!",
+    "speech_bubble": "First, `uv sync` or `pip install -r requirements.txt`. Then, watch `cli.py` kick things off!",
+    "mermaid": "graph TD\n    A[UserCommand] --> B{uvsync_or_pip};\n    B --> C{cli.py};\n    C --> D[analyze_repository];"
+  },
+  {
+    "title": "Brainstorming with Bots",
+    "description": "The heavy lifting happens here. We `analyze_repository` to understand your project, then `ComicRenderer.render` kicks in for the visual flair.",
+    "panel_text": "The `analyze_repo` tool crunches your code, then the `generate_comic` tool brings it to life.",
+    "speech_bubble": "The `analyze_repo` tool crunches your code, then the `generate_comic` tool brings it to life.",
+    "mermaid": "graph TD\n    A[cli.py] --> B(analyze_repo);\n    B --> C{analyze_repository};\n    C --> D(generate_comic);\n    D --> E{ComicRenderer.render};\n    E --> F[ComicOutput];"
+  },
+  {
+    "title": "Your Moment in the Spotlight",
+    "description": "Ready to dive in? Check `docs/SETUP.md` for the basics. Or hit `tests` if you're feeling adventurous and want to break something.",
+    "panel_text": "Play around with `.env.example`, read the `README.md`, or contribute to the `docs` folder!",
+    "speech_bubble": "Play around with `.env.example`, read the `README.md`, or contribute to the `docs` folder!",
+    "mermaid": "graph TD\n    A[NewContributor] --> B(ReadREADME.md);\n    A --> C(Checkdocs/SETUP.md);\n    A --> D(Configure.env.example);\n    A --> E(Exploretests);\n    B --> F(Contribution);\n    C --> F;\n    D --> F;\n    E --> F;"
+  }
+]

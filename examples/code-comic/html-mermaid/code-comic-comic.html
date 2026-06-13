@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Code Comic: D:\chandreshRaoRepos\code-comic</title>
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --paper: #fffef5;
+      --accent: #e94560;
+      --border: #1a1a2e;
+      --bubble: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Comic Sans MS", "Chalkboard SE", "Segoe UI", sans-serif;
+      background: var(--paper);
+      background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+      background-size: 12px 12px;
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .comic-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      border: 3px solid var(--border);
+      background: white;
+      padding: 1rem;
+      box-shadow: 4px 4px 0 var(--border);
+    }
+    .comic-header h1 {
+      font-size: 1.75rem;
+      letter-spacing: 0.02em;
+    }
+    .comic-header .meta {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+    .comic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media (max-width: 768px) {
+      .comic-grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      border: 3px solid var(--border);
+      background: white;
+      box-shadow: 5px 5px 0 var(--border);
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 2px solid var(--border);
+      background: #ffeaa7;
+    }
+    .panel-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      font-weight: bold;
+      background: var(--accent);
+      color: white;
+      flex-shrink: 0;
+    }
+    .panel-header h2 {
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+    .panel-body {
+      flex: 1;
+      padding: 0.75rem;
+      overflow: auto;
+      background: #f8f9fa;
+    }
+    .panel-body .mermaid {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      margin: 0;
+    }
+    .panel-description {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-style: italic;
+      border-top: 1px dashed var(--border);
+      color: #444;
+    }
+    .speech-bubble {
+      position: relative;
+      margin: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--bubble);
+      border: 2px solid var(--border);
+      border-radius: 1rem;
+    }
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 24px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 12px solid var(--border);
+    }
+    .speech-bubble p {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .comic-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <header class="comic-header">
+    <h1>Code Comic: D:\chandreshRaoRepos\code-comic</h1>
+    <p class="meta">Languages: example, html, json, lock, md, mmd, png, py, toml, txt &middot; 100 files analyzed</p>
+  </header>
+  <main class="comic-grid">
+        <article class="panel" aria-label="Panel 1">
+      <header class="panel-header">
+        <span class="panel-number">1</span>
+        <h2>Your Code, But Funnier</h2>
+      </header>
+      <div class="panel-body">
+        <pre class="mermaid">graph TD
+    A[GitHubRepo] --> B{code-comic};
+    B --> C[4sceneComic];</pre>
+      </div>
+      <p class="panel-description">Ever wish your `GitHub repository architecture` was less of a headache and more of a punchline? Well, here&#x27;s `code-comic` to the rescue. No, seriously.</p>
+      <div class="speech-bubble">
+        <p>Forget boring `README.md` files. This baby generates a `4-scene comic` from your code!</p>
+      </div>
+    </article>
+
+    <article class="panel" aria-label="Panel 2">
+      <header class="panel-header">
+        <span class="panel-number">2</span>
+        <h2>The Grand Entrance</h2>
+      </header>
+      <div class="panel-body">
+        <pre class="mermaid">graph TD
+    A[UserCommand] --> B{uvsync_or_pip};
+    B --> C{cli.py};
+    C --> D[analyze_repository];</pre>
+      </div>
+      <p class="panel-description">Before the magic, you gotta get it running. Just a few commands to install dependencies, then hit the `cli.py` for action.</p>
+      <div class="speech-bubble">
+        <p>First, `uv sync` or `pip install -r requirements.txt`. Then, watch `cli.py` kick things off!</p>
+      </div>
+    </article>
+
+    <article class="panel" aria-label="Panel 3">
+      <header class="panel-header">
+        <span class="panel-number">3</span>
+        <h2>Brainstorming with Bots</h2>
+      </header>
+      <div class="panel-body">
+        <pre class="mermaid">graph TD
+    A[cli.py] --> B(analyze_repo);
+    B --> C{analyze_repository};
+    C --> D(generate_comic);
+    D --> E{ComicRenderer.render};
+    E --> F[ComicOutput];</pre>
+      </div>
+      <p class="panel-description">The heavy lifting happens here. We `analyze_repository` to understand your project, then `ComicRenderer.render` kicks in for the visual flair.</p>
+      <div class="speech-bubble">
+        <p>The `analyze_repo` tool crunches your code, then the `generate_comic` tool brings it to life.</p>
+      </div>
+    </article>
+
+    <article class="panel" aria-label="Panel 4">
+      <header class="panel-header">
+        <span class="panel-number">4</span>
+        <h2>Your Moment in the Spotlight</h2>
+      </header>
+      <div class="panel-body">
+        <pre class="mermaid">graph TD
+    A[NewContributor] --> B(ReadREADME.md);
+    A --> C(Checkdocs/SETUP.md);
+    A --> D(Configure.env.example);
+    A --> E(Exploretests);
+    B --> F(Contribution);
+    C --> F;
+    D --> F;
+    E --> F;</pre>
+      </div>
+      <p class="panel-description">Ready to dive in? Check `docs/SETUP.md` for the basics. Or hit `tests` if you&#x27;re feeling adventurous and want to break something.</p>
+      <div class="speech-bubble">
+        <p>Play around with `.env.example`, read the `README.md`, or contribute to the `docs` folder!</p>
+      </div>
+    </article>
+
+  </main>
+  <footer class="comic-footer">Generated by code-comic</footer>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'strict' });
+  </script>
+</body>
+</html>

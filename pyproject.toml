@@ -3,11 +3,15 @@ name = "code-comic"
 version = "0.1.0"
 description = "Generate a 4-scene comic explaining a GitHub repo architecture."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
     "requests>=2.0",
+    "huggingface_hub>=0.26.0",
     "python-dotenv>=0.21",
-    "Pillow>=10.0"
+    "Pillow>=10.0",
+    "google-genai>=2.8.0",
+    "openai>=2.34.0",
+    "mcp[cli]>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -16,5 +20,28 @@ dev = [
     "pytest-mock>=3.0"
 ]
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: live API test (set CODE_COMIC_RUN_LIVE=1 to enable)",
+]
+
 [project.scripts]
 code-comic = "cli:main"
+code-comic-mcp = "src.mcp_server:main"
+
+# Optional: Configure code-comic behavior
+# Uncomment and customize as needed
+[tool.code-comic]
+# Context mode: "lightweight" (README + docs only) or "comprehensive" (full repo)
+# Default: "lightweight" to minimize token usage
+# context-mode = "lightweight"
+
+# Render mode: "html-mermaid" (Mermaid diagrams, no image API) or "html-image" (PNG panels in HTML)
+# render-mode = "html-mermaid"
+
+# Custom ignore patterns (in addition to .gitignore and built-in defaults)
+# ignore-patterns = ["*.tmp", "custom_build/", "temp_*"]
+
+# Maximum content size for comprehensive mode (in KB)
+# Warning issued if this is exceeded. Default: 500
+# max-content-size-kb = 500

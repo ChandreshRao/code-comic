@@ -1,0 +1,90 @@
+{
+  "path": "D:\\chandreshRaoRepos\\vishwakarma",
+  "top_level": [
+    ".env.template",
+    ".github",
+    ".planning",
+    "Dockerfile",
+    "README.md",
+    "docker-compose.yml",
+    "index.html",
+    "netlify.toml",
+    "package-lock.json",
+    "package.json",
+    "public",
+    "requirements.txt",
+    "scripts",
+    "src",
+    "vite.config.js"
+  ],
+  "languages": [
+    "css",
+    "gs",
+    "html",
+    "js",
+    "json",
+    "jsx",
+    "md",
+    "py",
+    "template",
+    "toml",
+    "txt",
+    "yml"
+  ],
+  "file_counts": {
+    ".template": 1,
+    ".yml": 4,
+    "<no-ext>": 1,
+    ".html": 1,
+    ".toml": 1,
+    ".json": 2,
+    ".md": 9,
+    ".txt": 1,
+    ".js": 2,
+    ".gs": 1,
+    ".py": 3,
+    ".jsx": 5,
+    ".css": 1
+  },
+  "package_files": [
+    "package.json",
+    "requirements.txt"
+  ],
+  "detected_features": [
+    "README"
+  ],
+  "total_files": 32,
+  "sample_files": [
+    ".env.template",
+    "docker-compose.yml",
+    "Dockerfile",
+    "index.html",
+    "netlify.toml",
+    "package-lock.json",
+    "package.json",
+    "README.md",
+    "requirements.txt",
+    "vite.config.js",
+    "scripts/check-sync.js",
+    "scripts/Code.gs",
+    "scripts/copy_local.py",
+    "scripts/setup_images.py",
+    "scripts/sync.py",
+    "src/App.jsx",
+    "src/index.css",
+    "src/main.jsx",
+    "src/components/SearchBar.jsx",
+    "src/components/VirtualTour.jsx",
+    "src/context/ConfigContext.jsx",
+    ".planning/codebase/ARCHITECTURE.md",
+    ".planning/codebase/CONCERNS.md",
+    ".planning/codebase/CONVENTIONS.md",
+    ".planning/codebase/INTEGRATIONS.md"
+  ],
+  "context_mode": "lightweight",
+  "content_warnings": [],
+  "files_analyzed": 1,
+  "content": {
+    "README.md": "# \ud83d\udd31 Vishwakarma: Zero-Cost School CMS\n\n[![Deploy School CMS](https://github.com/your-username/vishwakarma/actions/workflows/deploy.yml/badge.svg)](https://github.com/your-username/vishwakarma/actions/workflows/deploy.yml)\n\nA premium, high-performance school website builder powered by **Google Drive**, built with **React 19**, and deployed for free via **GitHub Pages**.\n\n---\n\n## \ud83c\udfa8 Branding & Identity\nTo white-label the website for your school, edit the **`src/siteConfig.js`** file. You can change:\n- School Name & Initials\n- Tagline & Description\n- Contact Info (Email, Phone, Address)\n- Established Year & Trust Details\n- Social Media Links\n\n---\n\n## \ud83d\ude80 The Architecture\nVishwakarma operates on a \"Headless Static\" model:\n1.  **Content (Source)**: Staff edit Markdown and upload images to a specific Google Drive folder.\n2.  **Sync Engine**: A Python pipeline (`sync.py`) fetches cloud data, parses YAML frontmatter, generates a static search index, and optimizes assets.\n3.  **Frontend**: A cinematic React 19 application renders the data with **Framer Motion** animations.\n4.  **Deployment**: GitHub Actions triggers a sync-and-build process, hosting the site on GitHub Pages with zero server costs.\n\n---\n\n## \u2728 Premium Features\n-   **\ud83d\udd0d Cinematic Search**: Instant global search (`Ctrl + K`) powered by a static pre-built index.\n-   **\ud83c\udf10 360\u00b0 Virtual Tour**: Immersive campus exploration built with Pannellum.\n-   **\ud83c\udfad Staggered Animations**: Elegant, \"Modern Heritage\" layout reveals for all sections.\n-   **\ud83d\udcf1 Mobile-First**: Fully responsive design with a custom organic framing system.\n-   **\ud83d\udcc2 Auto-Sync**: One-click (or automated) content updates from Google Drive.\n\n---\n\n## \ud83d\udee0\ufe0f Local Development\n\n### 1. Installation\n```powershell\n# Install Node dependencies\nnpm install\n\n# Install Python sync dependencies\npip install -r requirements.txt\n```\n\n### 2. Configuration (`.env`)\nCreate a `.env` file in the root directory (see `.env.template`):\n```env\nPIPELINE_MODE=gdrive\nGDRIVE_FOLDER_ID=\"your_folder_id\"\nGDRIVE_SERVICE_ACCOUNT_KEY='{\"your_json_key\": \"...\"}'\n```\n\n### 3. Run the App\n```powershell\nnpm run dev\n```\n*Note: `npm run dev` automatically runs the `sync.py` script first to ensure your local preview has the latest content.*\n\n---\n\n## \ud83d\udc33 Docker Setup\nFor a consistent environment, you can run the entire pipeline via Docker:\n\n```powershell\n# Build and run the production-ready container\ndocker compose up --build\n```\nThe site will be available at `http://localhost:8080`.\n\n---\n\n## \u2699\ufe0f Cloud Infrastructure Setup (Free)\n\n### Phase 1: Google Cloud Project\n1.  Enable **Google Drive API** in the [Google Cloud Console](https://console.cloud.google.com/).\n2.  Create a **Service Account** with the **Editor** role.\n3.  Download the **JSON Key** and share your Drive folder with the service account email.\n\n### Phase 2: GitHub Integration\nAdd your credentials to **GitHub Secrets** (`Settings > Secrets > Actions`):\n-   `GDRIVE_SERVICE_ACCOUNT_KEY`: The full content of your JSON key.\n-   `GDRIVE_FOLDER_ID`: The ID of your main Google Drive folder.\n\n---\n\n## \ud83d\udcc1 Content Structure\nMaintain this hierarchy in Google Drive for automatic sorting:\n-   `01-About`: History, Mission, Achievements.\n-   `02-Academics`: Curriculum, Ecosystem.\n-   `03-Admissions`: Procedures, Fees.\n-   `04-Gallery`: Campus photos.\n-   `05-Blog`: News and updates.\n-   `06-Disclosures`: Mandatory public disclosures.\n\n---\nBuilt with \u2764\ufe0f by **Vishwakarma CMS**."
+  }
+}

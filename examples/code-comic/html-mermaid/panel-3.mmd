@@ -1,0 +1,6 @@
+graph TD
+    A[cli.py] --> B(analyze_repo);
+    B --> C{analyze_repository};
+    C --> D(generate_comic);
+    D --> E{ComicRenderer.render};
+    E --> F[ComicOutput];

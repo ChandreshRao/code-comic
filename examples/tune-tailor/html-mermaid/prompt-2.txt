@@ -1,0 +1,1 @@
+Your natural language queries hit the Dynamic Dashboard, driving `public/app.js` to get things rolling.

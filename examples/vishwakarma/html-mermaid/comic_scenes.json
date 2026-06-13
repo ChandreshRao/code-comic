@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Welcome to the Vishwakarma Vibe!",
+    "description": "This isn't your grandma's school website. We\u2019re talking zero-cost, slick performance, and a tech stack that\u2019ll make your dev heart sing.",
+    "panel_text": "Alright, new recruit! Forget those dusty old CMSes. This bad boy runs on pure ingenuity.",
+    "speech_bubble": "Alright, new recruit! Forget those dusty old CMSes. This bad boy runs on pure ingenuity.",
+    "mermaid": "graph TD\n    A[Vishwakarma] --> B(React19)\n    B --> C{GoogleDrive}\n    C --> D[GitHubPages]"
+  },
+  {
+    "title": "The Pixel Path: From Browser to Backend (ish)",
+    "description": "A user hits the school's URL, and boom! `index.html` loads, kicking off a React app that pulls everything together.",
+    "panel_text": "So, a student wants to see lunch menus? The browser grabs `index.html`, and `vite.config.js` has already done the heavy lifting.",
+    "speech_bubble": "So, a student wants to see lunch menus? The browser grabs `index.html`, and `vite.config.js` has already done the heavy lifting.",
+    "mermaid": "graph TD\n    A[UserBrowser] --> B(index.html)\n    B --> C[public]\n    B --> D(ReactAppinsrc)\n    D --> E[vite.config.js]"
+  },
+  {
+    "title": "The Secret Sauce: Drive-Thru Data",
+    "description": "The true magic? Content lives in Google Drive, making it incredibly easy to manage without database headaches. `src/siteConfig.js` handles all the unique branding.",
+    "panel_text": "No pricey databases here. We leverage Google Drive for content, and `src/siteConfig.js` for school branding. Genius, right?",
+    "speech_bubble": "No pricey databases here. We leverage Google Drive for content, and `src/siteConfig.js` for school branding. Genius, right?",
+    "mermaid": "graph TD\n    A[GoogleDrive] --> B(src)\n    B --> C[React19]\n    C --> D(src/siteConfig.js)"
+  },
+  {
+    "title": "Your Turn, Padawan: Contributing Made Easy",
+    "description": "Want to jump in? Clone the repo, check `README.md`, tweak `src/siteConfig.js`, and `npm install`. Deployment is automated via `.github`.",
+    "panel_text": "Ready to contribute? `README.md` is your bible. Change `src/siteConfig.js` for branding, and let `.github` do the rest!",
+    "speech_bubble": "Ready to contribute? `README.md` is your bible. Change `src/siteConfig.js` for branding, and let `.github` do the rest!",
+    "mermaid": "graph TD\n    A[NewContributor] --> B(README.md)\n    B --> C(src/siteConfig.js)\n    C --> D(package.json)\n    D --> E(.github)\n    E --> F[deploy.yml]"
+  }
+]

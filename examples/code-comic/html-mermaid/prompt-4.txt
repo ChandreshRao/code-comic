@@ -1,0 +1,1 @@
+Play around with `.env.example`, read the `README.md`, or contribute to the `docs` folder!

@@ -1,0 +1,1 @@
+No pricey databases here. We leverage Google Drive for content, and `src/siteConfig.js` for school branding. Genius, right?

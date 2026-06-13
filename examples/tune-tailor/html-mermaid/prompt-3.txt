@@ -1,0 +1,1 @@
+The Gemini LLM then maps your query, probably referencing something like `alexa_skill/interactionModel.json`.

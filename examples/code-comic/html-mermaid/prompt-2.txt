@@ -1,0 +1,1 @@
+First, `uv sync` or `pip install -r requirements.txt`. Then, watch `cli.py` kick things off!

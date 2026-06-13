@@ -40,6 +40,10 @@ Before running the CLI or MCP tools, configure API keys in a `.env` file at the 
 
    Optional overrides (`CODE_COMIC_LLM_MODELS`, `CODE_COMIC_IMAGE_MODELS`, provider inference, and more) are documented in `.env.example`.
 
+## Limitations
+
+`html-image` panel quality depends on the configured model chain (default: `black-forest-labs/FLUX.1-schnell` via Hugging Face, then Gemini). Free-tier Hugging Face inference may be slower or rate-limited; text rendered inside generated panels is best-effort (a known weakness of diffusion models at every tier). For consistent demos, use bundled [`examples/`](examples/) or default `html-mermaid` mode. Override models via `CODE_COMIC_IMAGE_MODELS` if you have access to other providers.
+
 ## Microsoft IQ integration (`requirement.md`)
 
 This submission satisfies the **Microsoft IQ** evaluation criterion via **Foundry IQ** — agentic knowledge retrieval that grounds LLM outputs with cited enterprise sources. Work IQ and Fabric IQ are not used.
@@ -191,6 +195,7 @@ python cli.py . --render-mode html-image --context-mode comprehensive
 | Repository | Render mode | Comic HTML |
 |------------|-------------|------------|
 | **TuneTailor** — local music assistant with Gemini intent mapping | `html-mermaid` | [`examples/tune-tailor/html-mermaid/comic.html`](examples/tune-tailor/html-mermaid/comic.html) |
+| **TuneTailor** | `html-image` (AI PNG panels) | [`examples/tune-tailor/html-image/tune-tailor-comic.html`](examples/tune-tailor/html-image/tune-tailor-comic.html) |
 | **Vishwakarma** — zero-cost school CMS (React + Python sync) | `html-mermaid` | [`examples/vishwakarma/html-mermaid/vishwakarma-comic.html`](examples/vishwakarma/html-mermaid/vishwakarma-comic.html) |
 | **Vishwakarma** | `html-image` (AI PNG panels) | [`examples/vishwakarma/html-image/vishwakarma-comic.html`](examples/vishwakarma/html-image/vishwakarma-comic.html) |
 

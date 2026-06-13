@@ -5,19 +5,19 @@ description = "Generate a 4-scene comic explaining a GitHub repo architecture."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "requests>=2.0",
-    "huggingface_hub>=0.26.0",
-    "python-dotenv>=0.21",
-    "Pillow>=10.0",
-    "google-genai>=2.8.0",
-    "openai>=2.34.0",
-    "mcp[cli]>=1.0",
+    "requests==2.34.2",
+    "huggingface_hub==1.19.0",
+    "python-dotenv==1.2.2",
+    "Pillow==12.2.0",
+    "google-genai==2.8.0",
+    "openai==2.41.1",
+    "mcp[cli]==1.27.2",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0",
-    "pytest-mock>=3.0"
+    "pytest==9.0.3",
+    "pytest-mock==3.15.1",
 ]
 
 [tool.pytest.ini_options]

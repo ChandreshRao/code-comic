@@ -253,6 +253,8 @@ def build_scene_prompt(repo_metadata: Dict[str, Any], render_mode: str = "html-m
             f"{guidelines} "
             "For each scene provide: title, description, panel_text. "
             "panel_text is a brief visual note for an illustrator (1 sentence max), not the speech bubble. "
+            "If panel_text mentions labels, banners, logos, or on-screen text, quote the exact English words "
+            "(1-4 words each) — never use non-English script or placeholder text. "
             "Return ONLY a raw JSON array with exactly four objects. "
             "Do NOT wrap in markdown code fences. "
             "Keys per object: title, description, panel_text.\n\n"

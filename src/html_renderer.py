@@ -14,6 +14,13 @@ def _escape(text: str) -> str:
     return html.escape(text, quote=True)
 
 
+def _repo_display_name(metadata: Dict[str, Any]) -> str:
+    repo_path = metadata.get("path", "Repository")
+    if not repo_path or repo_path == "Repository":
+        return "Repository"
+    return Path(str(repo_path)).name or str(repo_path)
+
+
 def _templates_dir() -> Path:
     return _TEMPLATES_DIR
 
@@ -70,8 +77,7 @@ def render_comic_html(
             f"Missing comic template: {_templates_dir() / 'comic-mermaid.html'}"
         )
 
-    repo_path = metadata.get("path", "Repository")
-    page_title = _escape(f"Code Comic: {repo_path}")
+    page_title = _escape(f"Code Comic: {_repo_display_name(metadata)}")
     languages = _escape(", ".join(metadata.get("languages", [])) or "unknown")
     total_files = str(metadata.get("total_files", 0))
 
@@ -134,8 +140,7 @@ def render_comic_html_with_images(
             f"Missing comic template: {_templates_dir() / 'comic-image.html'}"
         )
 
-    repo_path = metadata.get("path", "Repository")
-    page_title = _escape(f"Code Comic: {repo_path}")
+    page_title = _escape(f"Code Comic: {_repo_display_name(metadata)}")
     languages = _escape(", ".join(metadata.get("languages", [])) or "unknown")
     total_files = str(metadata.get("total_files", 0))
 

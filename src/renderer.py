@@ -27,8 +27,11 @@ def _image_prompt_prefix() -> str:
         except OSError:
             pass
     return (
-        "Comic book panel, clean line art, tech humor style, "
-        "no written text or captions in the image: "
+        "Comic book panel, clean line art, tech humor style. "
+        "Written text is allowed but must be English only — Latin alphabet, "
+        "no foreign scripts, no gibberish, no made-up words. "
+        "Keep any labels or captions short (1-4 words). "
+        "English-speaking characters only: "
     )
 
 

@@ -40,27 +40,29 @@ Before running the CLI or MCP tools, configure API keys in a `.env` file at the 
 
    Optional overrides (`CODE_COMIC_LLM_MODELS`, `CODE_COMIC_IMAGE_MODELS`, provider inference, and more) are documented in `.env.example`.
 
-## Microsoft IQ Integration
+## Microsoft IQ integration (`requirement.md`)
 
-This project supports Foundry IQ (agentic knowledge retrieval) to ground LLM outputs with cited enterprise sources. When enabled, code-comic can augment prompts with retrieved knowledge and citations from your organization's Foundry instance to reduce hallucination.
+This submission satisfies the **Microsoft IQ** evaluation criterion via **Foundry IQ** — agentic knowledge retrieval that grounds LLM outputs with cited enterprise sources. Work IQ and Fabric IQ are not used.
 
-To enable Foundry IQ:
+| Aspect | Status in this repo |
+|--------|---------------------|
+| IQ layer chosen | **Foundry IQ** — architecture-pattern knowledge base lookup before scene generation |
+| Code integration | Optional client in `src/foundry_client.py`, wired in `src/renderer.py` when env vars are set |
+| Submission demo | **Concept + code hook only** — bundled `examples/` comics and default CLI runs do **not** call a live Foundry IQ endpoint (no Azure knowledge base provisioned) |
+| Why | Reduces hallucinated architecture claims by injecting retrieved, cited snippets into the comic prompt |
 
-- Add the following to your `.env` at the repo root:
+**How it works (when enabled):** before the LLM writes scene JSON, `ComicRenderer` builds a short repo query (path, top-level entries, languages), calls Foundry IQ, and inserts the result as synthetic content `__foundry_iq.txt` so `prompt_generator` includes grounded snippets in the prompt.
 
-  ```text
-  FOUNDRY_IQ_ENDPOINT=https://<your-foundry-endpoint>
-  FOUNDRY_IQ_API_KEY=<your-api-key>
-  ```
+**Enable for your own Azure knowledge base** (optional; not required to run the demo):
 
-- Optional settings (set if needed):
-  - `FOUNDRY_IQ_TIMEOUT` — request timeout in seconds (default: 10)
-  - `FOUNDRY_IQ_CACHE` — `true`/`false` to enable local caching of retrieved snippets
+```text
+FOUNDRY_IQ_ENDPOINT=https://<your-search-service>.search.windows.net/knowledgebases('<kb-name>')/retrieve?api-version=2026-04-01
+FOUNDRY_IQ_API_KEY=<your-search-api-key>
+```
 
-Behavior:
-- If both `FOUNDRY_IQ_ENDPOINT` and `FOUNDRY_IQ_API_KEY` are present, code-comic will use Foundry IQ to enrich prompts before calling the configured LLM. Otherwise the project falls back to provider-only prompts as documented above.
+Optional: `FOUNDRY_IQ_TIMEOUT` (seconds, default `10`). If either endpoint or key is missing, the pipeline skips IQ and behaves as documented above.
 
-See `docs/SETUP.md` for step-by-step key setup and security guidance.
+Full design, Azure prerequisites, API notes, and honest scope: **[docs/FOUNDRY_IQ.md](docs/FOUNDRY_IQ.md)**.
 
 ## Install, run, and test
 

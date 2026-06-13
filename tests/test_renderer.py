@@ -77,7 +77,10 @@ def test_renderer_html_image_saves_images_and_html(tmp_path: Path, monkeypatch) 
     prompt_files = [Path(p) for p in result["prompt_files"]]
     assert len(prompt_files) == 4
     assert all(path.exists() for path in prompt_files)
-    expected_prompt = "Comic book panel, clean line art, tech humor style: First prompt text."
+    expected_prompt = (
+        "Comic book panel, clean line art, tech humor style, no written text or captions "
+        "in the image, English-speaking characters only: First prompt text."
+    )
     assert prompt_files[0].read_text(encoding="utf-8") == expected_prompt
 
     image_files = [Path(p) for p in result["image_files"]]
@@ -95,7 +98,8 @@ def test_renderer_html_image_saves_images_and_html(tmp_path: Path, monkeypatch) 
 
     assert len(fake_image.generated) == 4
     assert fake_image.generated[1]["prompt"] == (
-        "Comic book panel, clean line art, tech humor style: Second prompt text."
+        "Comic book panel, clean line art, tech humor style, no written text or captions "
+        "in the image, English-speaking characters only: Second prompt text."
     )
 
 

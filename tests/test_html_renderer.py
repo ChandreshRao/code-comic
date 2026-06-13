@@ -2,8 +2,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.html_renderer import render_comic_html, render_comic_html_with_images
+from src.html_renderer import _templates_dir, render_comic_html, render_comic_html_with_images
 from src.prompt_generator import _build_fallback_mermaid, build_scene_prompt
+
+
+def test_html_templates_exist_in_repo() -> None:
+    templates_dir = _templates_dir()
+    assert (templates_dir / "comic-mermaid.html").exists()
+    assert (templates_dir / "comic-image.html").exists()
+    assert (templates_dir / "panel-mermaid.html").exists()
+    assert (templates_dir / "panel-image.html").exists()
 
 
 def test_build_scene_prompt_html_mode_asks_for_mermaid() -> None:

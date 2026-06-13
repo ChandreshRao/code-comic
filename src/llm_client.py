@@ -136,7 +136,8 @@ class GeminiClient(LLMClient):
 
 class HuggingFaceLLMClient(LLMClient):
     _SYSTEM_PROMPT = (
-        "You are a helpful assistant that writes comic scene descriptions."
+        "You are a helpful assistant that writes comic scene descriptions. "
+        "Always respond in English only. All titles, descriptions, and dialogue must be English."
     )
 
     def generate_text(self, prompt: str) -> str:

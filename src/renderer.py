@@ -15,14 +15,27 @@ from .prompt_generator import (
 )
 from .utils import ensure_output_dir, save_json, save_text
 
-_IMAGE_PROMPT_PREFIX = "Comic book panel, clean line art, tech humor style: "
+_PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 logger = get_logger("renderer")
+
+
+def _image_prompt_prefix() -> str:
+    path = _PROMPTS_DIR / "image_prompt_prefix.txt"
+    if path.exists():
+        try:
+            return path.read_text(encoding="utf-8").strip()
+        except OSError:
+            pass
+    return (
+        "Comic book panel, clean line art, tech humor style, "
+        "no written text or captions in the image: "
+    )
 
 
 def _scene_prompt_text(scene: dict, *, for_image: bool = False) -> str:
     if for_image:
         panel_text = scene.get("panel_text") or scene.get("speech_bubble", "")
-        return f"{_IMAGE_PROMPT_PREFIX}{panel_text}"
+        return f"{_image_prompt_prefix()} {panel_text}"
     return scene.get("speech_bubble") or scene.get("panel_text", "")
 
 

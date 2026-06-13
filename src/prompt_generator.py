@@ -126,7 +126,7 @@ def _creative_guidelines() -> str:
         except OSError:
             pass
     return (
-        "Write like a witty tech comic, not a README summary. "
+        "Write ALL text in English only. Write like a witty tech comic, not a README summary. "
         "Each panel is one beat in a story arc: (1) hook the reader, (2) show how requests flow, "
         "(3) reveal the clever core logic, (4) land the payoff for a new contributor. "
         "Use punchy titles with personality (wordplay welcome). "

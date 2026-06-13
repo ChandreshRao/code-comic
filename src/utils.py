@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 
 
@@ -11,6 +12,15 @@ def normalize_repo_path(repo_path: str) -> Path:
     if not path.is_dir():
         raise NotADirectoryError(f"Repository path is not a directory: {path}")
     return path
+
+
+def timestamped_output_dir_name(prefix: str = "code-comic", *, now: datetime | None = None) -> str:
+    moment = now or datetime.now()
+    return f"{prefix}-{moment.strftime('%Y%m%d-%H%M%S')}"
+
+
+def default_output_dir(repo_path: str, prefix: str = "code-comic", *, now: datetime | None = None) -> str:
+    return str(Path(repo_path) / timestamped_output_dir_name(prefix, now=now))
 
 
 def ensure_output_dir(output_dir: str) -> Path:

@@ -1,142 +1,173 @@
 # code-comic
+
 A Python CLI application that analyzes a GitHub repository architecture and generates a 4-scene comic explanation.
 
-## Features
+## What it does
+
 - Analyze a local Git repository path
 - Extract repository metadata and code structure
 - Generate a 4-scene comic script using an LLM prompt (Gemini by default, with Hugging Face as optional secondary fallback)
 - Render comics as HTML with Mermaid diagrams (`html-mermaid`, default) or generated PNG panels (`html-image`)
 - Generate comic panel images via Hugging Face (`huggingface_hub`) by default, with Gemini as secondary fallback, and automatic `html-mermaid` fallback on image failure
+- Expose the same pipeline over MCP (`analyze_repo`, `generate_comic`) for Copilot agents and CLI
 
-## Installation
+## Setup
 
-```bash
-uv venv
-.venv\Scripts\activate
-```
+Before running the CLI or MCP tools, configure API keys in a `.env` file at the **code-comic** repo root.
 
-```bash
-uv pip install -r requirements.txt
-```
+1. Copy the example file:
 
-Or using `uv sync` (recommended):
+   **Windows**
+
+   ```powershell
+   copy .env.example .env
+   ```
+
+   **macOS / Linux**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Add the keys you need:
+
+   | Render mode | API keys |
+   |-------------|----------|
+   | `html-mermaid` (default) | `GEMINI_API_KEY` (or another LLM key you configure) |
+   | `html-image` | `GEMINI_API_KEY` + `HF_TOKEN` recommended |
+
+   Step-by-step key setup with links to [Google AI Studio](https://aistudio.google.com/app/apikey) and [Hugging Face Access Tokens](https://huggingface.co/settings/tokens): **[docs/SETUP.md](docs/SETUP.md)**.
+
+   Optional overrides (`CODE_COMIC_LLM_MODELS`, `CODE_COMIC_IMAGE_MODELS`, provider inference, and more) are documented in `.env.example`.
+
+## Install, run, and test
+
+### Install dependencies
+
+Using `uv` (recommended):
 
 ```bash
 uv sync
 ```
 
-## Usage
+Or with a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+**Windows (PowerShell)**
+
+```powershell
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**macOS / Linux**
+
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Generate a comic
 
 ```bash
 python cli.py path/to/repo
 ```
 
 Optional arguments:
-- `--output-dir`: directory to write outputs (default: `output`)
-- `--render-mode`: output format — `html-mermaid` (Mermaid diagram comic in `{repo-name}-comic.html`, no image API calls) or `html-image` (PNG panels in `images/` referenced from HTML; auto-fallback to `html-mermaid` on image failure). Default: `html-mermaid`
-- `--context-mode`: `lightweight` (README + docs, minimal tokens) or `comprehensive` (full repo analysis)
-- `--debug`: print debug details and re-raise exceptions
 
-## Environment
+- `--output-dir` — directory to write outputs (default: `output`)
+- `--render-mode` — `html-mermaid` (Mermaid diagram comic in `{repo-name}-comic.html`, no image API calls) or `html-image` (PNG panels in `images/`; auto-fallback to `html-mermaid` on image failure). Default: `html-mermaid`
+- `--context-mode` — `lightweight` (README + docs, minimal tokens) or `comprehensive` (full repo analysis)
+- `--debug` — print debug details and re-raise exceptions
 
-Recommended environment variables for provider integration (set in `.env`; loaded automatically):
-- `HF_TOKEN` or `HUGGINGFACE_API_KEY` (default image provider via Hugging Face Inference API)
-- `GEMINI_API_KEY` (secondary image fallback and default LLM when no provider-specific key is set)
-- `CODE_COMIC_LLM_API_KEY` or `OPENAI_API_KEY`
-- `CODE_COMIC_IMAGE_API_KEY` (overrides provider-specific image keys when set)
-- `CODE_COMIC_LLM_MODELS` (comma-separated list; first item is primary, rest are fallbacks on API failure). Example: `gemini,meta-llama/Meta-Llama-3-8B-Instruct`
-- `CODE_COMIC_IMAGE_MODELS` (comma-separated list; first item is default, rest are fallbacks). Example: `black-forest-labs/FLUX.1-schnell,gemini-2.5-flash-image`
-- `CODE_COMIC_LLM_PROVIDER` and `CODE_COMIC_IMAGE_PROVIDER` are optional; when omitted the provider will be inferred from the model identifier (e.g., `black-forest-labs/...` → Hugging Face, `gemini-...` → Gemini).
-- `CODE_COMIC_RENDER_MODE`: `html-mermaid` or `html-image` (default: `html-mermaid`)
-
-### Virtual environment & .env
-
-Create and activate a virtual environment (recommended):
-
-- Windows
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-- macOS / Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-Copy the example environment file and populate secrets from `.env.example`:
-
-- Windows
-
-```powershell
-copy .env.example .env
-```
-
-- macOS / Linux
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set provider API keys and other values before running the CLI.
-
-## Output
-
-The CLI saves:
-- `repo_metadata.json`
-- `comic_scenes.json`
-- `prompt-1.txt` through `prompt-4.txt` (caption/prompt files for each panel)
-- `{repo-name}-comic.html` (always produced for both render modes)
-- `panel-1.mmd` through `panel-4.mmd` (`html-mermaid` mode only)
-- `images/panel-1.png` through `images/panel-4.png` (`html-image` mode when image APIs succeed)
-
-For lowest token usage, use lightweight context and Mermaid rendering:
+For lowest token usage:
 
 ```bash
 python cli.py path/to/repo --context-mode lightweight --render-mode html-mermaid
 ```
 
-## Tests
+### Output artifacts
 
-```bash
-pytest tests
-```
+The CLI writes:
 
-## GitHub Copilot
+- `repo_metadata.json`, `comic_scenes.json`
+- `prompt-1.txt` through `prompt-4.txt`
+- `{repo-name}-comic.html` (both render modes)
+- `panel-1.mmd` through `panel-4.mmd` (`html-mermaid` only)
+- `images/panel-1.png` through `images/panel-4.png` (`html-image` when image APIs succeed)
 
-- See `docs/COPILOT_USAGE.md` for a short, file-oriented summary of how Copilot helped implement features and tests.
-
-## Use with GitHub Copilot (MCP)
-
-- Phase 2 (MCP) provides a thin stdio server exposing two tools: `analyze_repo` and `generate_comic`.
-- See `docs/MCP_SETUP.md` for setup and usage instructions (VS Code Copilot Agent integration).
-
-### Sample repo fixture
-
-A minimal TinyCalc project lives at `tests/fixtures/sample-repo/` for smoke-testing the full pipeline.
-
-**Offline smoke test** (no API keys; generates placeholder PNG panels):
-
-```bash
-pytest tests/test_sample_repo.py::test_renderer_generates_png_panels_from_sample_repo -v
-```
-
-**Manual CLI run** against the fixture:
+Smoke-test with the bundled fixture:
 
 ```bash
 python cli.py tests/fixtures/sample-repo --output-dir output/sample-test
 ```
 
-**Live image generation test** (requires `HF_TOKEN` and/or `GEMINI_API_KEY` in `.env`):
+### Run tests
 
 ```bash
-set CODE_COMIC_RUN_LIVE=1
-pytest tests/test_sample_repo.py::test_live_image_generation_from_sample_repo -v
+pytest tests
 ```
 
-If the image API is unavailable, the test skips with a message; the CLI still produces `{repo-name}-comic.html` via auto-fallback to `html-mermaid`.
+Optional live image test (requires `HF_TOKEN` and/or `GEMINI_API_KEY` in `.env`):
+
+```bash
+# Windows
+set CODE_COMIC_RUN_LIVE=1
+pytest tests/test_sample_repo.py::test_live_image_generation_from_sample_repo -v
+
+# macOS / Linux
+CODE_COMIC_RUN_LIVE=1 pytest tests/test_sample_repo.py::test_live_image_generation_from_sample_repo -v
+```
+
+## Use MCP in another repo
+
+The MCP server exposes `analyze_repo` and `generate_comic` — the same code paths as `cli.py`. Install **code-comic** once, register the server in Copilot (VS Code `.vscode/mcp.json` or Copilot CLI), then pass `repo_path` to any local Git repository you want to analyze.
+
+**Typical Copilot CLI prompt** (from the target repo or with `repo_path` set):
+
+```
+Use generate_comic with render_mode=html-mermaid and context_mode=comprehensive for the current repo.
+```
+
+Terminal capture from a real run against **TuneTailor** (output written to `code-comic-20260613-161405/` in that repo):
+
+![Copilot CLI running generate_comic via the code-comic MCP server](docs/assets/copilot-cli-generate-comic.png)
+
+Full setup for VS Code Copilot Agent, Copilot CLI, user-profile config, and tool parameters: **[docs/MCP_SETUP.md](docs/MCP_SETUP.md)**.
+
+Development notes on how Copilot helped build and validate the project: **[docs/COPILOT_USAGE.md](docs/COPILOT_USAGE.md)**.
+
+## Examples
+
+Pre-generated comic outputs are included so you can preview results before running the CLI yourself. Open the HTML files in a browser.
+
+The **TuneTailor** and **Vishwakarma** examples below were produced by pointing Copilot CLI at those repositories with `generate_comic` (see screenshot above). The **code-comic** self-demo can be reproduced locally with `python cli.py .` or via MCP on `.`.
+
+### This repo explains itself (`code-comic`)
+
+The project was run against **its own source** — a self-referential demo that walks through `cli.py`, MCP tools, and the docs folder.
+
+| Render mode | Comic HTML | Notes |
+|-------------|------------|-------|
+| `html-mermaid` | [`examples/code-comic/html-mermaid/code-comic-comic.html`](examples/code-comic/html-mermaid/code-comic-comic.html) | Mermaid diagrams; references `docs/SETUP.md`, `cli.py`, MCP |
+| `html-image` | [`examples/code-comic/html-image/code-comic-comic.html`](examples/code-comic/html-image/code-comic-comic.html) | AI-generated PNG panels in `images/` |
+
+Reproduce from the repo root:
+
+```bash
+python cli.py . --render-mode html-mermaid --context-mode lightweight
+python cli.py . --render-mode html-image --context-mode comprehensive
+```
+
+### Other repositories
+
+| Repository | Render mode | Comic HTML |
+|------------|-------------|------------|
+| **TuneTailor** — local music assistant with Gemini intent mapping | `html-mermaid` | [`examples/tune-tailor/html-mermaid/comic.html`](examples/tune-tailor/html-mermaid/comic.html) |
+| **Vishwakarma** — zero-cost school CMS (React + Python sync) | `html-mermaid` | [`examples/vishwakarma/html-mermaid/vishwakarma-comic.html`](examples/vishwakarma/html-mermaid/vishwakarma-comic.html) |
+| **Vishwakarma** | `html-image` (AI PNG panels) | [`examples/vishwakarma/html-image/vishwakarma-comic.html`](examples/vishwakarma/html-image/vishwakarma-comic.html) |
+
+Each example folder contains the full artifact set: `comic_scenes.json`, `repo_metadata.json`, `prompt-*.txt`, and (for Mermaid mode) `panel-*.mmd` or (for image mode) `images/panel-*.png`.

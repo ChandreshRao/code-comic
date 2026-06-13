@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Tuning In",
+    "description": "Alright, welcome to \ud83c\udfb5 TuneTailor. This isn't just a music player; it's where your local music meets AI, all detailed in the `README.md`.",
+    "panel_text": "Alright, newbie, welcome to \ud83c\udfb5 TuneTailor! Ditch those old playlists; we've got AI here.",
+    "speech_bubble": "Alright, newbie, welcome to \ud83c\udfb5 TuneTailor! Ditch those old playlists; we've got AI here.",
+    "mermaid": "graph LR\n    A[README.md] --> B{\ud83c\udfb5 TuneTailor};\n    B --> C[AI-Powered Intent Extraction];"
+  },
+  {
+    "title": "The Request Reel",
+    "description": "Users interact with the Dynamic Dashboard. Their requests flow from `public/index.html` through `public/app.js`, kicking off the intent process.",
+    "panel_text": "Your natural language queries hit the Dynamic Dashboard, driving `public/app.js` to get things rolling.",
+    "speech_bubble": "Your natural language queries hit the Dynamic Dashboard, driving `public/app.js` to get things rolling.",
+    "mermaid": "graph LR\n    A[User] --> B[public/index.html];\n    B --> C[public/app.js];\n    C --> D{AI-Powered Intent Extraction};"
+  },
+  {
+    "title": "The Maestro's Mind",
+    "description": "Here's where the magic happens: the Gemini LLM deciphers intent, mapping natural language queries to specific actions, potentially using `alexa_skill/interactionModel.json` for context.",
+    "panel_text": "The Gemini LLM then maps your query, probably referencing something like `alexa_skill/interactionModel.json`.",
+    "speech_bubble": "The Gemini LLM then maps your query, probably referencing something like `alexa_skill/interactionModel.json`.",
+    "mermaid": "graph LR\n    A[public/app.js] --> B{Gemini LLM};\n    B --> C[AI-Powered Intent Extraction];\n    C --> D[alexa_skill/interactionModel.json];"
+  },
+  {
+    "title": "Your Turn to Play",
+    "description": "The payoff? Your contributions will help manage and play local music. Get ready to tweak the `src` logic or expand the `songs` library.",
+    "panel_text": "Now you can actually contribute to managing and playing `songs`. Go make your mark in `src`!",
+    "speech_bubble": "Now you can actually contribute to managing and playing `songs`. Go make your mark in `src`!",
+    "mermaid": "graph LR\n    A{AI-Powered Intent Extraction} --> B[Manage & Play];\n    B --> C[songs];\n    C --> D[src];"
+  }
+]

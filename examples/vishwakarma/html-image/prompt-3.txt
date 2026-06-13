@@ -1,0 +1,1 @@
+Comic book panel, clean line art, tech humor style, no written text or captions in the image, English-speaking characters only: Code snippets visible with a 'React 19' logo, showing an open `src/siteConfig.js` file with configurable options.

@@ -1,0 +1,1 @@
+Forget boring `README.md` files. This baby generates a `4-scene comic` from your code!

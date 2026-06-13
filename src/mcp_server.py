@@ -14,6 +14,7 @@ from .analyzer import analyze_repository
 from .config import Config
 from .log_setup import get_logger, setup_logging
 from .renderer import ComicRenderer
+from .utils import default_output_dir
 
 logger = get_logger("mcp_server")
 
@@ -181,7 +182,7 @@ def generate_comic(
     """
     repo = _resolve_repo_path(repo_path)
     if output_dir is None:
-        output_dir = os.path.join(repo, "output")
+        output_dir = default_output_dir(repo)
 
     logger.info(
         "generate_comic called (repo=%s, context_mode=%s, render_mode=%s, output_dir=%s)",

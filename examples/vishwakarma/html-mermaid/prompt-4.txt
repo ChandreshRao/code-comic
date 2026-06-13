@@ -1,0 +1,1 @@
+Ready to contribute? `README.md` is your bible. Change `src/siteConfig.js` for branding, and let `.github` do the rest!

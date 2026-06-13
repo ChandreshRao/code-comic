@@ -1,0 +1,1 @@
+So, a student wants to see lunch menus? The browser grabs `index.html`, and `vite.config.js` has already done the heavy lifting.

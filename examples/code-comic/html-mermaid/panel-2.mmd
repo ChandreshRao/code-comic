@@ -1,0 +1,4 @@
+graph TD
+    A[UserCommand] --> B{uvsync_or_pip};
+    B --> C{cli.py};
+    C --> D[analyze_repository];

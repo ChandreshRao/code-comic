@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Welcome to the Comic-verse",
+    "description": "Welcome to `code-comic`, where we take the drudgery out of understanding codebases by transforming them into visually engaging narratives.",
+    "panel_text": "A new hire looks perplexed at a screen displaying a comic strip instead of code, labeled 'code-comic'.",
+    "speech_bubble": "Forget boring `README.md` files; we turn your GitHub repository architecture into a 4-scene comic explanation!",
+    "mermaid": "flowchart TD\n    Repo[Repository]\n    _code_comic_ignore[\".code-comic-ignore\"]\n    _env_example[\".env.example\"]\n    LICENSE[\"LICENSE\"]\n    README_md[\"README.md\"]\n    Repo --> _code_comic_ignore\n    Repo --> _env_example\n    Repo --> LICENSE\n    Repo --> README_md"
+  },
+  {
+    "title": "The Grand Inauguration",
+    "description": "It all kicks off with a simple command, but behind the scenes, we're gobbling up configuration from `.env.example` and prepping for AI magic.",
+    "panel_text": "A developer types a command into a terminal, while a `.env` file icon glows faintly next to a 'Gemini API key' label.",
+    "speech_bubble": "After you `uv sync` and set up your `.env` with a Gemini API key, just run `cli.py`.",
+    "mermaid": "flowchart TD\n    A[\"Source\"] --> B[\"Application\"]"
+  },
+  {
+    "title": "Brainwaves & Brushes",
+    "description": "The real secret sauce is how `analyze_repo` dissects your codebase, then `ComicRenderer.render` brings your architecture to life, often guided by insights from `docs/COPILOT_USAGE.md`.",
+    "panel_text": "A flow chart shows 'analyze_repository' leading to 'ComicRenderer.render', with thought bubbles pointing to 'GitHub Copilot Chat'.",
+    "speech_bubble": "Our `analyze_repository` function feeds `ComicRenderer.render` \u2013 it\u2019s like magic, thanks to GitHub Copilot Chat!",
+    "mermaid": "flowchart TD\n    A[\"Source\"] --> B[\"Application\"]"
+  },
+  {
+    "title": "Your Next Masterpiece",
+    "description": "You'll be generating beautiful output like `output-20260613-155630` in no time, and maybe even sketching out the future with `docs/FOUNDRY_IQ.md`.",
+    "panel_text": "A smiling new hire holds a comic book with the `code-comic` logo, looking toward a whiteboard with 'Future Features' written on it.",
+    "speech_bubble": "Now you know how `code-comic` works. Ready to tackle `docs/FOUNDRY_IQ.md` or enhance the comic output?",
+    "mermaid": "flowchart TD\n    Dev[\"Developer\"] --> Read[\"Read docs\"]\n    Read --> Code[\"Write example, html, json, lock, md, mmd, png, py, toml, txt code\"]\n    Code --> Ship[\"Ship changes\"]"
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "path": "D:\\chandreshRaoRepos\\tune-tailor",
+  "top_level": [
+    "README.md",
+    "alexa_skill",
+    "db",
+    "package-lock.json",
+    "package.json",
+    "public",
+    "songs",
+    "src",
+    "tests",
+    "uploads"
+  ],
+  "languages": [
+    "css",
+    "html",
+    "js",
+    "json",
+    "md"
+  ],
+  "file_counts": {
+    ".json": 3,
+    ".md": 2,
+    "<no-ext>": 1,
+    ".js": 12,
+    ".html": 1,
+    ".css": 1
+  },
+  "package_files": [
+    "package.json"
+  ],
+  "detected_features": [
+    "README",
+    "README"
+  ],
+  "total_files": 20,
+  "sample_files": [
+    "package-lock.json",
+    "package.json",
+    "README.md",
+    "alexa_skill/interactionModel.json",
+    "alexa_skill/README.md",
+    "db/.gitkeep",
+    "public/app.js",
+    "public/index.html",
+    "public/style.css",
+    "src/server.js",
+    "tests/test-db.js",
+    "tests/test-llm.js",
+    "tests/test-matcher.js",
+    "src/config/constants.js",
+    "src/config/index.js",
+    "src/services/database.js",
+    "src/services/llm.js",
+    "src/services/matcher.js",
+    "src/utils/scanner.js",
+    "alexa_skill/Skill Code/lambda/index.js"
+  ],
+  "context_mode": "lightweight",
+  "content_warnings": [],
+  "files_analyzed": 1,
+  "content": {
+    "README.md": "# \ud83c\udfb5 TuneTailor\n\nTuneTailor is a sophisticated local music assistant designed to bridge the gap between your music collection and AI-driven intent extraction. It allows you to search, manage, and play your local music library while mapping natural language queries to specific songs via the Gemini LLM.\n\n## \ud83d\ude80 Features\n\n- **Dynamic Dashboard**: A modern, glassmorphic UI for managing your music and intent mappings.\n- **AI-Powered Intent Extraction**: Uses Google's Gemini models to understand natural language requests (e.g., \"play mandahasame\").\n- **Song Management**: \n  - Integrated multi-file upload support.\n  - Automatic metadata extraction (Title, Artist, Album) using `music-metadata`.\n  - CRUD operations for editing song details and deleting files.\n- **Intent Mapping**:\n  - Map specific queries to songs manually or automatically via AI.\n  - Search, filter, and paginate through your intent library.\n- **Application Settings**: \n  - Configure `SONGS_PATH`, `GEMINI_API_KEY`, and `MODELS` directly through the UI.\n  - **Security**: Sensitive keys like `GEMINI_API_KEY` are masked by default with a visibility toggle.\n- **Live Streaming**: Stream your local audio files directly to the browser.\n\n## \ud83d\udee0\ufe0f Technology Stack\n\n- **Backend**: Node.js, Express.js (ESM)\n- **Database**: SQLite (via `better-sqlite3`)\n- **AI**: Google Gemini API (Axios)\n- **Metadata**: `music-metadata`\n- **Frontend**: Vanilla HTML5, CSS3, JavaScript\n- **Styling**: Glassmorphism, CSS Variables, Responsive Design\n\n## \ud83d\udd11 Obtaining a Gemini API Key\n\nTo use the AI intent extraction features, you'll need a free API key from Google AI Studio:\n\n1.  Go to [Google AI Studio](https://aistudio.google.com/).\n2.  Sign in with your Google account.\n3.  Click on **Get API key** in the left sidebar.\n4.  Click **Create API key in new project**.\n5.  Copy your key and add it to your `.env` file or enter it in the **Application Settings** dashboard.\n\n## \ud83c\udf99\ufe0f Integrations\n\n### Alexa Custom Skill\nTuneTailor can be controlled via voice using a private Alexa skill. This allows you to say commands like *\"Alexa, ask music assistant to play Bohemian Rhapsody\"* to your Echo devices.\n\n- **Setup Guide**: See the [Alexa Skill Setup Guide](file:///d:/chandreshRaoRepos/tune-tailor/alexa_skill/README.md) for detailed instructions.\n\n## \ud83d\udce6 Installation\n\n1. **Clone the repository**:\n   ```bash\n   git clone <repository-url>\n   cd tune-tailor\n   ```\n\n2. **Install dependencies**:\n   ```bash\n   npm install\n   ```\n\n3. **Configure Environment Variables**:\n   Create a `.env` file in the root based on the provided template:\n   ```env\n   GEMINI_API_KEY=your_api_key_here\n   SONGS_PATH=./songs\n   BASE_URL=http://localhost:3000\n   ```\n\n4. **Initialize Metadata**:\n   Run the scanner to index your initial songs folder:\n   ```bash\n   node src/utils/scanner.js\n   ```\n\n## \ud83c\udfae Usage\n\n1. **Start the server**:\n   ```bash\n   npm start\n   ```\n\n2. **Access the dashboard**:\n   Open your browser and navigate to `http://localhost:3000`.\n\n3. **Manage Songs**:\n   - Use the **+ Add Songs** button to upload multiple files.\n   - Edit metadata directly in the table.\n   - Click the **Play** icon to preview tracks.\n\n4. **Map Intents**:\n   - Add new mappings or edit existing ones.\n   - Test queries in the search bar to see how they resolve.\n\n## \u2699\ufe0f Configuration\n\nThe application settings are stored in a dedicated `settings` table in the SQLite database and can be managed via the **Application Settings** section at the bottom of the dashboard. Changes to the `SONGS_PATH` are applied dynamically to the scanner and streaming service.\n\n## \ud83d\udcdc License\n\nThis project is licensed under the MIT License.\n"
+  }
+}

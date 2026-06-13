@@ -78,20 +78,26 @@ def test_generate_comic_returns_expected_keys(monkeypatch, tmp_path):
     assert isinstance(out.get("scenes"), list)
 
 
-def test_generate_comic_defaults_output_dir_to_repo_output(tmp_path, monkeypatch):
+def test_generate_comic_defaults_output_dir_to_timestamped_code_comic(tmp_path, monkeypatch):
     repo_path = tmp_path / "repo"
     repo_path.mkdir()
+    expected_output_dir = str(repo_path / "code-comic-20260613-155630")
+    monkeypatch.setattr(
+        mcp,
+        "default_output_dir",
+        lambda repo, prefix="code-comic": expected_output_dir,
+    )
 
     def fake_from_env(*, output_dir=None, context_mode=None, render_mode=None, repo_root=None, **kwargs):
         assert repo_root == str(repo_path)
-        assert output_dir == str(repo_path / "output")
+        assert output_dir == expected_output_dir
         return FakeConfig(output_dir=output_dir, context_mode=context_mode, render_mode=render_mode)
 
     class FakeConfig:
         def __init__(self, *args, **kwargs):
             self.render_mode = kwargs.get("render_mode", "html-mermaid")
             self.context_mode = kwargs.get("context_mode", "lightweight")
-            self.output_dir = kwargs.get("output_dir", str(repo_path / "output"))
+            self.output_dir = kwargs.get("output_dir", expected_output_dir)
             self.ignore_patterns = []
             self.max_content_size_bytes = 500_000
             self.debug = False
@@ -100,15 +106,15 @@ def test_generate_comic_defaults_output_dir_to_repo_output(tmp_path, monkeypatch
 
     class FakeRenderer:
         def __init__(self, cfg):
-            assert cfg.output_dir == str(repo_path / "output")
+            assert cfg.output_dir == expected_output_dir
 
         def render(self, repo_path_arg):
             assert repo_path_arg == str(repo_path)
             return {
-                "output_dir": str(repo_path / "output"),
+                "output_dir": expected_output_dir,
                 "render_mode_used": "html-mermaid",
                 "fallback": None,
-                "html_file": str(repo_path / "output" / f"{repo_path.name}-comic.html"),
+                "html_file": str(Path(expected_output_dir) / f"{repo_path.name}-comic.html"),
                 "scenes": [{"title": "T1", "speech_bubble": "S1"}],
             }
 
@@ -116,6 +122,6 @@ def test_generate_comic_defaults_output_dir_to_repo_output(tmp_path, monkeypatch
 
     out = mcp.generate_comic(repo_path=str(repo_path), context_mode="lightweight", render_mode="html-mermaid")
 
-    assert out.get("output_dir") == str(repo_path / "output")
+    assert out.get("output_dir") == expected_output_dir
     assert out.get("render_mode_used") == "html-mermaid"
     assert isinstance(out.get("scenes"), list)

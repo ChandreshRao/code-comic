@@ -1,0 +1,1 @@
+The `analyze_repo` tool crunches your code, then the `generate_comic` tool brings it to life.

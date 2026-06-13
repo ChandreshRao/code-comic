@@ -1,0 +1,1 @@
+Comic book panel, clean line art, tech humor style, no written text or captions in the image, English-speaking characters only: A flow chart shows 'analyze_repository' leading to 'ComicRenderer.render', with thought bubbles pointing to 'GitHub Copilot Chat'.

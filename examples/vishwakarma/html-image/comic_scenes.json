@@ -1,0 +1,30 @@
+[
+  {
+    "title": "The Zero-Cost Zen Master",
+    "description": "Alright, fresh meat. Welcome to Vishwakarma! This ain't your grandma's school CMS, we make magic happen.",
+    "panel_text": "Repo Guide, a dishevelled but cool dev, gestures wildly at a gleaming 'Vishwakarma' logo.",
+    "speech_bubble": "Repo Guide, a dishevelled but cool dev, gestures wildly at a gleaming 'Vishwakarma' logo.",
+    "mermaid": "flowchart TD\n    Repo[Repository]\n    _env_template[\".env.template\"]\n    _github[\".github\"]\n    _planning[\".planning\"]\n    Dockerfile[\"Dockerfile\"]\n    Repo --> _env_template\n    Repo --> _github\n    Repo --> _planning\n    Repo --> Dockerfile"
+  },
+  {
+    "title": "The Data Dynamo",
+    "description": "Forget databases. Our school CMS pulls content from Google Drive! Check the `public` directory or `index.html` for views.",
+    "panel_text": "A simplified diagram shows an arrow from a cloud labelled 'Google Drive' pointing to a browser displaying a school website.",
+    "speech_bubble": "A simplified diagram shows an arrow from a cloud labelled 'Google Drive' pointing to a browser displaying a school website.",
+    "mermaid": "flowchart TD\n    A[\"Source\"] --> B[\"Application\"]"
+  },
+  {
+    "title": "React-ion Time!",
+    "description": "Under the hood, it's pure React 19 power. Customizing the website? Just tweak `src/siteConfig.js`, it's that simple.",
+    "panel_text": "Code snippets visible with a 'React 19' logo, showing an open `src/siteConfig.js` file with configurable options.",
+    "speech_bubble": "Code snippets visible with a 'React 19' logo, showing an open `src/siteConfig.js` file with configurable options.",
+    "mermaid": "flowchart TD\n    A[\"Source\"] --> B[\"Application\"]"
+  },
+  {
+    "title": "Deploy, Dev, & Dominate",
+    "description": "Deployment? GitHub Pages, baby! Check `deploy.yml` or `README.md` for a quick start. Get your scripts running!",
+    "panel_text": "A celebratory scene with a 'Deployed!' banner, a happy dev, and a badge showing 'GitHub Actions' success.",
+    "speech_bubble": "A celebratory scene with a 'Deployed!' banner, a happy dev, and a badge showing 'GitHub Actions' success.",
+    "mermaid": "flowchart TD\n    Dev[\"Developer\"] --> Read[\"Read docs\"]\n    Read --> Code[\"Write css, gs, html, js, json, jsx, md, mmd, py, template, toml, txt, yml code\"]\n    Code --> Ship[\"Ship changes\"]"
+  }
+]

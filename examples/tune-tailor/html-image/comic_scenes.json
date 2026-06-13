@@ -1,0 +1,30 @@
+[
+  {
+    "title": "The Overture of AI-Tunes",
+    "description": "Welcome to \ud83c\udfb5 TuneTailor, where we elevate your local music experience beyond mere playback. It's not just another player; it's about intelligence.",
+    "panel_text": "A user looking bored at a basic music player, then a spotlight hits a logo that says \"\ud83c\udfb5 TuneTailor\".",
+    "speech_bubble": "A user looking bored at a basic music player, then a spotlight hits a logo that says \"\ud83c\udfb5 TuneTailor\".",
+    "mermaid": "flowchart TD\n    Repo[Repository]\n    README_md[\"README.md\"]\n    alexa_skill[\"alexa_skill\"]\n    db[\"db\"]\n    package_lock_json[\"package-lock.json\"]\n    Repo --> README_md\n    Repo --> alexa_skill\n    Repo --> db\n    Repo --> package_lock_json"
+  },
+  {
+    "title": "The Alexa Serenade Stream",
+    "description": "Requests can hit us from anywhere, like your `alexa_skill`. A `LaunchRequest` comes in, we grab that `API_URL` and send it off.",
+    "panel_text": "An Alexa Echo device with speech bubbles connecting to a server rack labelled \"\ud83c\udfb5 TuneTailor Backend\".",
+    "speech_bubble": "An Alexa Echo device with speech bubbles connecting to a server rack labelled \"\ud83c\udfb5 TuneTailor Backend\".",
+    "mermaid": "flowchart TD\n    A[\"Source\"] --> B[\"Application\"]"
+  },
+  {
+    "title": "The Intent Symphony",
+    "description": "This is where the magic happens. We've got `INTENTS` defined in `src/config/constants.js`, ready to be fed to our Gemini LLM via the `GEMINI_BASE_URL`.",
+    "panel_text": "A diagram showing a thought bubble transforming into structured data, with \"INTENTS\" labels and a big \"Gemini\" logo.",
+    "speech_bubble": "A diagram showing a thought bubble transforming into structured data, with \"INTENTS\" labels and a big \"Gemini\" logo.",
+    "mermaid": "flowchart TD\n    A[\"Source\"] --> B[\"Application\"]"
+  },
+  {
+    "title": "Your Solo, New Contributor",
+    "description": "Want to dive in? The `public/app.js` handles the `Dynamic Dashboard` and manages your `songs`. Plenty of space to add new features or fine-tune existing ones.",
+    "panel_text": "A developer happily coding at a computer showing a \"Dynamic Dashboard\" with music controls and a \"CONTRIBUTE!\" banner.",
+    "speech_bubble": "A developer happily coding at a computer showing a \"Dynamic Dashboard\" with music controls and a \"CONTRIBUTE!\" banner.",
+    "mermaid": "flowchart TD\n    Dev[\"Developer\"] --> Read[\"Read docs\"]\n    Read --> Code[\"Write css, html, js, json, md code\"]\n    Code --> Ship[\"Ship changes\"]"
+  }
+]

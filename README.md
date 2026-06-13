@@ -40,6 +40,34 @@ Before running the CLI or MCP tools, configure API keys in a `.env` file at the 
 
    Optional overrides (`CODE_COMIC_LLM_MODELS`, `CODE_COMIC_IMAGE_MODELS`, provider inference, and more) are documented in `.env.example`.
 
+## Limitations
+
+`html-image` panel quality depends on the configured model chain (default: `black-forest-labs/FLUX.1-schnell` via Hugging Face, then Gemini). Free-tier Hugging Face inference may be slower or rate-limited; text rendered inside generated panels is best-effort (a known weakness of diffusion models at every tier). For consistent demos, use bundled [`examples/`](examples/) or default `html-mermaid` mode. Override models via `CODE_COMIC_IMAGE_MODELS` if you have access to other providers.
+
+## Microsoft IQ integration (`requirement.md`)
+
+This submission satisfies the **Microsoft IQ** evaluation criterion via **Foundry IQ** — agentic knowledge retrieval that grounds LLM outputs with cited enterprise sources. Work IQ and Fabric IQ are not used.
+
+| Aspect | Status in this repo |
+|--------|---------------------|
+| IQ layer chosen | **Foundry IQ** — architecture-pattern knowledge base lookup before scene generation |
+| Code integration | Optional client in `src/foundry_client.py`, wired in `src/renderer.py` when env vars are set |
+| Submission demo | **Concept + code hook only** — bundled `examples/` comics and default CLI runs do **not** call a live Foundry IQ endpoint (no Azure knowledge base provisioned) |
+| Why | Reduces hallucinated architecture claims by injecting retrieved, cited snippets into the comic prompt |
+
+**How it works (when enabled):** before the LLM writes scene JSON, `ComicRenderer` builds a short repo query (path, top-level entries, languages), calls Foundry IQ, and inserts the result as synthetic content `__foundry_iq.txt` so `prompt_generator` includes grounded snippets in the prompt.
+
+**Enable for your own Azure knowledge base** (optional; not required to run the demo):
+
+```text
+FOUNDRY_IQ_ENDPOINT=https://<your-search-service>.search.windows.net/knowledgebases('<kb-name>')/retrieve?api-version=2026-04-01
+FOUNDRY_IQ_API_KEY=<your-search-api-key>
+```
+
+Optional: `FOUNDRY_IQ_TIMEOUT` (seconds, default `10`). If either endpoint or key is missing, the pipeline skips IQ and behaves as documented above.
+
+Full design, Azure prerequisites, API notes, and honest scope: **[docs/FOUNDRY_IQ.md](docs/FOUNDRY_IQ.md)**.
+
 ## Install, run, and test
 
 ### Install dependencies
@@ -167,6 +195,7 @@ python cli.py . --render-mode html-image --context-mode comprehensive
 | Repository | Render mode | Comic HTML |
 |------------|-------------|------------|
 | **TuneTailor** — local music assistant with Gemini intent mapping | `html-mermaid` | [`examples/tune-tailor/html-mermaid/comic.html`](examples/tune-tailor/html-mermaid/comic.html) |
+| **TuneTailor** | `html-image` (AI PNG panels) | [`examples/tune-tailor/html-image/tune-tailor-comic.html`](examples/tune-tailor/html-image/tune-tailor-comic.html) |
 | **Vishwakarma** — zero-cost school CMS (React + Python sync) | `html-mermaid` | [`examples/vishwakarma/html-mermaid/vishwakarma-comic.html`](examples/vishwakarma/html-mermaid/vishwakarma-comic.html) |
 | **Vishwakarma** | `html-image` (AI PNG panels) | [`examples/vishwakarma/html-image/vishwakarma-comic.html`](examples/vishwakarma/html-image/vishwakarma-comic.html) |
 

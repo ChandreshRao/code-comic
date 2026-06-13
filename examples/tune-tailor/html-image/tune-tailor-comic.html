@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Code Comic: code-comic</title>
+  <title>Code Comic: tune-tailor</title>
   <style>
     :root {
       --ink: #1a1a2e;
@@ -87,14 +87,14 @@
       padding: 0.75rem;
       overflow: auto;
       background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .panel-body .mermaid {
-      background: transparent;
-      border: none;
-      font-family: inherit;
-      font-size: 0.85rem;
-      white-space: pre-wrap;
-      margin: 0;
+    .panel-body .panel-image {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid var(--border);
     }
     .panel-description {
       padding: 0.5rem 0.75rem;
@@ -136,89 +136,67 @@
 </head>
 <body>
   <header class="comic-header">
-    <h1>Code Comic: code-comic</h1>
-    <p class="meta">Languages: example, html, json, lock, md, mmd, png, py, toml, txt &middot; 100 files analyzed</p>
+    <h1>Code Comic: tune-tailor</h1>
+    <p class="meta">Languages: css, html, js, json, md &middot; 20 files analyzed</p>
   </header>
   <main class="comic-grid">
         <article class="panel" aria-label="Panel 1">
       <header class="panel-header">
         <span class="panel-number">1</span>
-        <h2>Your Code, But Funnier</h2>
+        <h2>The Overture of AI-Tunes</h2>
       </header>
       <div class="panel-body">
-        <pre class="mermaid">graph TD
-    A[GitHubRepo] --> B{code-comic};
-    B --> C[4sceneComic];</pre>
+        <img src="images/panel-1.png" alt="The Overture of AI-Tunes" class="panel-image">
       </div>
-      <p class="panel-description">Ever wish your `GitHub repository architecture` was less of a headache and more of a punchline? Well, here&#x27;s `code-comic` to the rescue. No, seriously.</p>
+      <p class="panel-description">Welcome to 🎵 TuneTailor, where we elevate your local music experience beyond mere playback. It&#x27;s not just another player; it&#x27;s about intelligence.</p>
       <div class="speech-bubble">
-        <p>Forget boring `README.md` files. This baby generates a `4-scene comic` from your code!</p>
+        <p>A user looking bored at a basic music player, then a spotlight hits a logo that says &quot;🎵 TuneTailor&quot;.</p>
       </div>
     </article>
 
     <article class="panel" aria-label="Panel 2">
       <header class="panel-header">
         <span class="panel-number">2</span>
-        <h2>The Grand Entrance</h2>
+        <h2>The Alexa Serenade Stream</h2>
       </header>
       <div class="panel-body">
-        <pre class="mermaid">graph TD
-    A[UserCommand] --> B{uvsync_or_pip};
-    B --> C{cli.py};
-    C --> D[analyze_repository];</pre>
+        <img src="images/panel-2.png" alt="The Alexa Serenade Stream" class="panel-image">
       </div>
-      <p class="panel-description">Before the magic, you gotta get it running. Just a few commands to install dependencies, then hit the `cli.py` for action.</p>
+      <p class="panel-description">Requests can hit us from anywhere, like your `alexa_skill`. A `LaunchRequest` comes in, we grab that `API_URL` and send it off.</p>
       <div class="speech-bubble">
-        <p>First, `uv sync` or `pip install -r requirements.txt`. Then, watch `cli.py` kick things off!</p>
+        <p>An Alexa Echo device with speech bubbles connecting to a server rack labelled &quot;🎵 TuneTailor Backend&quot;.</p>
       </div>
     </article>
 
     <article class="panel" aria-label="Panel 3">
       <header class="panel-header">
         <span class="panel-number">3</span>
-        <h2>Brainstorming with Bots</h2>
+        <h2>The Intent Symphony</h2>
       </header>
       <div class="panel-body">
-        <pre class="mermaid">graph TD
-    A[cli.py] --> B(analyze_repo);
-    B --> C{analyze_repository};
-    C --> D(generate_comic);
-    D --> E{ComicRenderer.render};
-    E --> F[ComicOutput];</pre>
+        <img src="images/panel-3.png" alt="The Intent Symphony" class="panel-image">
       </div>
-      <p class="panel-description">The heavy lifting happens here. We `analyze_repository` to understand your project, then `ComicRenderer.render` kicks in for the visual flair.</p>
+      <p class="panel-description">This is where the magic happens. We&#x27;ve got `INTENTS` defined in `src/config/constants.js`, ready to be fed to our Gemini LLM via the `GEMINI_BASE_URL`.</p>
       <div class="speech-bubble">
-        <p>The `analyze_repo` tool crunches your code, then the `generate_comic` tool brings it to life.</p>
+        <p>A diagram showing a thought bubble transforming into structured data, with &quot;INTENTS&quot; labels and a big &quot;Gemini&quot; logo.</p>
       </div>
     </article>
 
     <article class="panel" aria-label="Panel 4">
       <header class="panel-header">
         <span class="panel-number">4</span>
-        <h2>Your Moment in the Spotlight</h2>
+        <h2>Your Solo, New Contributor</h2>
       </header>
       <div class="panel-body">
-        <pre class="mermaid">graph TD
-    A[NewContributor] --> B(ReadREADME.md);
-    A --> C(Checkdocs/SETUP.md);
-    A --> D(Configure.env.example);
-    A --> E(Exploretests);
-    B --> F(Contribution);
-    C --> F;
-    D --> F;
-    E --> F;</pre>
+        <img src="images/panel-4.png" alt="Your Solo, New Contributor" class="panel-image">
       </div>
-      <p class="panel-description">Ready to dive in? Check `docs/SETUP.md` for the basics. Or hit `tests` if you&#x27;re feeling adventurous and want to break something.</p>
+      <p class="panel-description">Want to dive in? The `public/app.js` handles the `Dynamic Dashboard` and manages your `songs`. Plenty of space to add new features or fine-tune existing ones.</p>
       <div class="speech-bubble">
-        <p>Play around with `.env.example`, read the `README.md`, or contribute to the `docs` folder!</p>
+        <p>A developer happily coding at a computer showing a &quot;Dynamic Dashboard&quot; with music controls and a &quot;CONTRIBUTE!&quot; banner.</p>
       </div>
     </article>
 
   </main>
   <footer class="comic-footer">Generated by code-comic</footer>
-  <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'strict' });
-  </script>
 </body>
 </html>

@@ -52,6 +52,12 @@ class Config:
     ignore_patterns: list[str] | None = None  # Additional patterns to ignore
     debug: bool = False
 
+    # Foundry IQ integration settings
+    foundry_iq_endpoint: str | None = None
+    foundry_iq_api_key: str | None = None
+    foundry_iq_timeout: int = 10
+    foundry_iq_cache: bool = False
+
     @staticmethod
     def _parse_models(env_var: str | None) -> list[str] | None:
         if not env_var:
@@ -173,6 +179,18 @@ class Config:
             or os.environ.get("OPENAI_API_KEY")
         )
 
+        # Foundry IQ envs
+        foundry_iq_endpoint = os.environ.get("FOUNDRY_IQ_ENDPOINT")
+        foundry_iq_api_key = os.environ.get("FOUNDRY_IQ_API_KEY")
+        foundry_iq_timeout_val = os.environ.get("FOUNDRY_IQ_TIMEOUT")
+        foundry_iq_timeout = 10
+        if foundry_iq_timeout_val:
+            try:
+                foundry_iq_timeout = int(foundry_iq_timeout_val)
+            except ValueError:
+                pass
+        foundry_iq_cache = os.environ.get("FOUNDRY_IQ_CACHE", "").lower() in ("1", "true", "yes")
+
         return cls(
             output_dir=output_dir,
             llm_provider=llm_provider or os.environ.get("CODE_COMIC_LLM_PROVIDER"),
@@ -188,6 +206,10 @@ class Config:
             max_content_size_bytes=max_content_size_bytes,
             ignore_patterns=ignore_patterns,
             debug=debug,
+            foundry_iq_endpoint=foundry_iq_endpoint,
+            foundry_iq_api_key=foundry_iq_api_key,
+            foundry_iq_timeout=foundry_iq_timeout,
+            foundry_iq_cache=foundry_iq_cache,
         )
 
     @property
